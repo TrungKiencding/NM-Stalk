@@ -1,0 +1,74 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils.ai_client import AIClient
+from models.models import State
+from prompts import TAGGING_PROMPT
+import re
+import logging
+from datetime import datetime
+import asyncio
+import json
+
+def clean_text(text: str) -> str:
+    """
+    Clean text while preserving meaningful structure and punctuation
+    """
+    try:
+        if not text or not isinstance(text, str):
+            raise ValueError("Input must be a non-empty string")
+            
+        # Replace multiple spaces, newlines, and tabs with single space
+        cleaned = re.sub(r'\s+', ' ', text)
+        
+        # Remove special characters but keep basic punctuation
+        cleaned = re.sub(r'[^\w\s.,!?-]', '', cleaned)
+        
+        # Remove extra spaces around punctuation
+        cleaned = re.sub(r'\s+([.,!?-])', r'\1', cleaned)
+        
+        # Normalize to single spaces and trim
+        cleaned = ' '.join(cleaned.split())
+        
+        if not cleaned.strip():
+            raise ValueError("Cleaning resulted in empty string")
+            
+        logging.info("Text cleaned successfully")
+        return cleaned
+    except Exception as e:
+        logging.error(f"Text cleaning failed: {e}")
+        raise
+
+def generate_tags(llm: AIClient, text: str, source: str) -> tuple[list[str], list[str]]:
+    try:
+        messages = TAGGING_PROMPT.format(text=text)
+
+        # Run async function in synchronous context
+        response = asyncio.run(llm.get_completion(messages))
+        content = response  
+        # Clean and parse tags
+        content_tags = [tag.strip() for tag in content.strip().split("\n") if tag.strip()]
+        source_tags = ['Github']
+        logging.info(f"Generated tags for {source}: {content_tags}, {source_tags}")
+        return content_tags, source_tags
+    except Exception as e:
+        logging.error(f"Tag generation failed: {e}")
+        raise
+
+def process_and_tag(state: State, llm: AIClient) -> State:
+    try:
+        for item in state.items:
+            if item.cleaned_text is None:
+                item.cleaned_text = clean_text(item.content_snippet)
+                item.content_tags, item.source_tags = generate_tags(llm, item.cleaned_text, item.source)
+                # Run async function in synchronous context
+                logging.info(f"Generating embedding for {type(item.cleaned_text)}")
+                embedding = asyncio.run(llm.get_embedding(item.cleaned_text))
+                # Convert numpy float32 to regular Python list
+                item.embedding = [float(x) for x in embedding]
+                item.timestamp = datetime.now()
+        logging.info("Processed and tagged items")
+        return state
+    except Exception as e:
+        logging.error(f"Process and tag failed: {e}")
+        raise
