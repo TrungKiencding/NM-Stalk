@@ -28,9 +28,17 @@ def main():
         graph.add_node("synthesize", lambda state: synthesize_articles(state, db, llm))
         graph.add_node("present", present_output)
 
+        # Set up the flow
         graph.add_edge("crawl", "process")
         graph.add_edge("process", "summarize")
-        graph.add_edge("summarize", "present")
+        graph.add_conditional_edges(
+            "summarize",
+            after_summarize,
+            {
+                "synthesize": "synthesize",
+                "present": "present"
+            }
+        )
         graph.add_edge("synthesize", "present")
         graph.set_entry_point("crawl")
 
