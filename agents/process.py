@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.ai_client import AIClient
 from models.models import State
-from prompts import TAGGING_PROMPT
+from prompts import TAGGING_PROMPT, TITLE_PROMPT
 import re
 import logging
 from datetime import datetime
@@ -48,11 +48,21 @@ def generate_tags(llm: AIClient, text: str, source: str) -> tuple[list[str], lis
         content = response  
         # Clean and parse tags
         content_tags = [tag.strip() for tag in content.strip().split("\n") if tag.strip()]
-        source_tags = ['Github']
-        logging.info(f"Generated tags for {source}: {content_tags}, {source_tags}")
-        return content_tags, source_tags
+        logging.info(f"Generated tags for {source}: {content_tags}")
+        return content_tags
     except Exception as e:
         logging.error(f"Tag generation failed: {e}")
+        raise
+
+def generate_title(llm: AIClient, text: str, source: str) -> str:
+    try:
+        messages = TITLE_PROMPT.format(text=text)
+        response = asyncio.run(llm.get_completion(messages))
+        title = response
+        logging.info(f"Generated title for {source}: {title}")
+        return title
+    except Exception as e:
+        logging.error(f"Title generation failed: {e}")
         raise
 
 def process_and_tag(state: State, llm: AIClient) -> State:
@@ -60,7 +70,8 @@ def process_and_tag(state: State, llm: AIClient) -> State:
         for item in state.items:
             if item.cleaned_text is None:
                 item.cleaned_text = clean_text(item.content_snippet)
-                item.content_tags, item.source_tags = generate_tags(llm, item.cleaned_text, item.source)
+                item.content_tags = generate_tags(llm, item.cleaned_text, item.source)
+                item.title = generate_title(llm, item.cleaned_text, item.source)
                 # Run async function in synchronous context
                 logging.info(f"Generating embedding for {type(item.cleaned_text)}")
                 embedding = asyncio.run(llm.get_embedding(item.cleaned_text))

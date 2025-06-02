@@ -1,6 +1,5 @@
 # NetMind Stalk
 
-A news aggregation and analysis system that collects, processes, and synthesizes news articles using AI.
 
 ## Features
 
@@ -12,7 +11,6 @@ A news aggregation and analysis system that collects, processes, and synthesizes
 
 ## Requirements
 
-- Python 3.8+
 - SQLite
 - Required Python packages are listed in `requirements.txt`
 
@@ -35,9 +33,23 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
+## Enable Azure key
+1. Make sure your .env file has the following configurations:
+```bash
+AZURE_OPENAI_ENDPOINT= ''
+AZURE_OPENAI_API_KEY= ''
+AZURE_OPENAI_API_VERSION = ''
+VOYAGE_API_KEY = ''
+```
+
 ## Usage
 
-1. Database Summary:
+1. Run test:
+```bash
+python main.py
+```
+
+2. Database Summary:
 ```bash
 python scripts/db_summary.py
 ```
@@ -52,14 +64,3 @@ NetMind-Stalk/
 └── README.md        # This file
 ```
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.

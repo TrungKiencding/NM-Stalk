@@ -10,7 +10,7 @@ def present_output(state: State) -> State:
             print("\nFinal selections:")
             #if item.is_final_selection and item.news_snippet:
             if item.news_snippet:
-                print(f"- {item.title}: {item.news_snippet}")
+                print(f"{item.news_snippet}")
         for article in state.synthesized_articles:
             print("\nSynthesized articles:")
             print(f"Article on {article.tag}:\n{article.article}\n")

@@ -6,7 +6,7 @@ You are a specialized AI assistant for tagging AI-related content. Your primary 
 1.  **Analyze Text:** Carefully examine the provided text.
 2.  **Tag Selection:**
     * You **MUST** choose tags *exclusively* from the following list:
-        `["machine-learning", "deep-learning", "llm", "nlp", "computer-vision", "chatgpt", "rag", "openai", "stable-diffusion", "text-to-speech", "speech-recognition", "reinforcement-learning", "ai-agents", "multimodal", "data-science", "python", "transformers", "gpt", "image-generation", "autonomous-agents", "webui", "fintech-ai", "healthtech-ai", "ai-infrastructure", "ai-devtools", "ai-hardware", "generative-ai", "voice-cloning", "prompt-engineering", "vision-language-models", "open-source-ai"]`
+        `["machine-learning", "deep-learning", "vlm", "llm", "nlp", "computer-vision", "chatgpt", "rag", "openai", "stable-diffusion", "text-to-speech", "speech-recognition", "reinforcement-learning", "ai-agents", "multimodal", "data-science", "python", "transformers", "gpt", "image-generation", "autonomous-agents", "webui", "fintech-ai", "healthtech-ai", "ai-infrastructure", "ai-devtools", "ai-hardware", "generative-ai", "voice-cloning", "prompt-engineering", "vision-language-models", "open-source-ai"]`
     * Select the **most relevant** tags that accurately describe the core topics of the text.
     * You may select **up to a maximum of 5 tags**.
     * If fewer than 5 tags are strongly relevant, select only those relevant tags.
@@ -24,16 +24,77 @@ You are a specialized AI assistant for tagging AI-related content. Your primary 
 **Input Text: {text}**
 """
 
-SUMMARY_PROMPT = """
-Summarize the following content in one paragraph:
+TITLE_PROMPT = """
+You are a specialized AI assistant for generating titles. Your primary function is to accurately generate a one-sentence title that thoroughly encapsulates the core message and key details of the text.
 
-{content}
+**Task:**
+Read the following content and generate a one-sentence title that thoroughly encapsulates the core message and key details of the text. 
+**Detailed requirements:**
+1. The title should be clear, complete, and fully representative of the passage. 
+2. The title should be same language as the text.
+3. The title should be no more than 15 words.
+4. Your response must include only the title and nothing else.
+
+**Input Text:**
+{text}
+"""
+
+SUMMARY_PROMPT = """
+You are a specialized AI assistant for summarizing content. Your primary function is to accurately summarize text by creating a short paragraph that highlights the most important main idea of the text.
+
+**Task:**
+Summarize the following content into a short paragraph that is concise and highlights only the most important main idea of the text. Use clear and standard English. The output should be a single paragraph, without bullet points or listings.
+
+**Detailed requirements:**
+
+1. Focus only on the most prominent main idea; do not include minor details.
+
+2. Maximum length: 1-2 sentences.
+
+3. Language: Standard, clear, and fluent English.
+
+4. Output format: One single paragraph, no line breaks, no special characters or bullet points.
+
+5. Do not add personal opinions, comments, or extra information.
+
+6. Do not repeat or refer to the task instructions in your answer.
+
+**Content to summarize:**
+{text}
 """
 
 NEWS_SNIPPET_PROMPT = """
-Write a short, engaging news snippet (1-2 paragraphs) about the following content, incorporating the tags: {tags}
+You are an expert in writing short news articles.
 
-{content}
+Your task is to generate a concise news article in {language} based on the inputs provided below. The output must be in Markdown and include:
+
+  • A level-1 title (the article headline)  
+  • A bolded one-sentence summary  
+  • A rewritten snippet (1–2 paragraphs) that faithfully covers the full content  
+  • A “Read more” link to the source URL  
+  • A tag that is relevant to the content
+Inputs:     
+  • title: {title}  
+  • summary: {summary}   
+  • Text: {text}  
+  • url: {url}  
+  • tag: {tag}
+Requirements:
+  – The snippet must be newly written (not copied verbatim).  
+  – Cover all key points from Text.  
+  – Keep it concise (1–2 paragraphs).  
+  – Append a Markdown link labeled “Read more” pointing to url.
+  - No need to rewrite the tag, the title and summary.
+Example Output (Markdown):
+# Qwen2.5-VL: A New Multimodal Open-Source Model
+**Summary:** The Qwen2.5-VL repository on GitHub unveils an advanced vision-language model supporting image-text tasks.
+
+**Snippet:**  
+QwenLM’s new Qwen2.5-VL package merges state-of-the-art vision and language capabilities into a single open-source framework. Designed for quick setup, it delivers top performance on benchmarks such as image captioning and visual question answering, and offers seamless access via Python APIs. With thorough documentation and step-by-step installation guides, developers can clone the repo, install dependencies, and start experimenting in minutes.
+
+[Read more](https://github.com/QwenLM/Qwen2.5-VL)
+
+**Tag:** LLMs, Vision-Language Models, Open-Source Models, Multimodal Models, Computer Vision
 """
 
 SYNTHESIZE_PROMPT = """

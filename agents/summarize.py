@@ -10,13 +10,12 @@ import asyncio
 def summarize_and_write(state: State, llm: AIClient) -> State:
     try:
         for item in state.items:
-            if item.is_novel and item.summary is None:
-                messages = SUMMARY_PROMPT.format(content=item.cleaned_text)
+            if  item.summary is None:
+                messages = SUMMARY_PROMPT.format(text=item.cleaned_text)
                 summary_response = asyncio.run(llm.get_completion(messages))
                 item.summary = summary_response
 
-                tags = ", ".join(item.content_tags + item.source_tags)
-                messages = NEWS_SNIPPET_PROMPT.format(tags=tags, content=item.cleaned_text)
+                messages = NEWS_SNIPPET_PROMPT.format(text=item.cleaned_text, summary=item.summary, title=item.title, url=item.url, language='English', tag=item.content_tags)
                 snippet_response = asyncio.run(llm.get_completion(messages))
                 item.news_snippet = snippet_response
         logging.info("Summarization and news writing completed")

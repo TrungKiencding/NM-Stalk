@@ -18,10 +18,10 @@ def simulate_crawl() -> list[Item]:
             item = Item(
                 id=str(uuid.uuid4()),  # Generate a unique ID
                 url=raw_item["link"],  # Map link to url
-                title=raw_item["link"],
+                title=None,
                 content_snippet=raw_item["raw_content"],
                 publication_date=datetime.now(),  # Current time as we don't have original date
-                source="GitHub",
+                source= "GitHub", # depends on the source of the crawled data
                 timestamp=datetime.now()
             )
             items.append(item)
@@ -32,9 +32,9 @@ def simulate_crawl() -> list[Item]:
         raise
 def crawl_data(state: State) -> State:
     try:
-        github_items = simulate_crawl()
-        state.items.extend(github_items)
-        logging.info(f"Crawled {len(github_items)} items")
+        crawl_items = simulate_crawl()
+        state.items.extend(crawl_items)
+        logging.info(f"Crawled {len(crawl_items)} items")
         return state
     except Exception as e:
         logging.error(f"Crawl data failed: {e}")
