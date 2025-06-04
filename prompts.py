@@ -97,6 +97,39 @@ QwenLM’s new Qwen2.5-VL package merges state-of-the-art vision and language ca
 **Tag:** LLMs, Vision-Language Models, Open-Source Models, Multimodal Models, Computer Vision
 """
 
+
+INSPECTION_PROMPT = """
+You are an expert content inspector. Your task is to validate the quality and accuracy of AI-generated content.
+Please analyze the following content and identify any issues with:
+1. Title: Check if it accurately represents the content and is not misleading
+2. Tags: Verify if they are relevant and appropriate
+3. Summary: Ensure it captures the main points without hallucinations or inaccuracies
+4. News Snippet: Confirm it faithfully represents the original content
+
+Original Content: {content}
+Generated Title: {title}
+Generated Tags: {tags}
+Generated Summary: {summary}
+Generated News Snippet: {snippet}
+
+**Respond with a JSON object in this format:**  
+{{
+    "title_valid": true,
+    "tags_valid": true,
+    "summary_valid": true,
+    "snippet_valid": true,
+    "issues": {{
+        "title": null,
+        "tags": null,
+        "summary": null,
+        "snippet": null
+    }}
+}}
+
+Note: For each field in "issues", provide a description of the problem if the corresponding *_valid field is false, otherwise leave it as null.
+"""
+
+
 SYNTHESIZE_PROMPT = """
 Write a comprehensive synthesis article (3-5 paragraphs) on the topic of {tag}, based on the following recent developments:
 

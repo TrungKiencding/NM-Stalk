@@ -74,10 +74,10 @@ def process_and_tag(state: State, llm: AIClient) -> State:
                 item.title = generate_title(llm, item.cleaned_text, item.source)
                 # Run async function in synchronous context
                 logging.info(f"Generating embedding for {type(item.cleaned_text)}")
-                embedding = asyncio.run(llm.get_embedding(item.cleaned_text))
+                #embedding = asyncio.run(llm.get_embedding(item.cleaned_text))
                 # Convert numpy float32 to regular Python list
-                item.embedding = [float(x) for x in embedding]
-                item.timestamp = datetime.now()
+                #item.embedding = [float(x) for x in embedding]
+                item.timestamp = datetime.today()
         logging.info("Processed and tagged items")
         return state
     except Exception as e:

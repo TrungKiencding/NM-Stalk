@@ -7,3 +7,4 @@ numpy==2.2.6
 scikit-learn==1.6.1
 langgraph==0.4.7
 sqlalchemy==2.0.41
+streamlit==1.45.1

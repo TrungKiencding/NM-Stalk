@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from datetime import datetime
 from sqlalchemy import Column, String, DateTime, Boolean, JSON
 from sqlalchemy.ext.declarative import declarative_base
@@ -28,9 +28,11 @@ class SynthesizedArticle(BaseModel):
     date: datetime
 
 class State(BaseModel):
-    session_count: int = 0
+    session_count: int = 1
     items: List[Item] = []
     synthesized_articles: List[SynthesizedArticle] = []
+    inspection_results: List[Dict[str, Any]] = []
+    next_step: Optional[str] = None
 
 # SQLAlchemy Models for Database
 class DBItem(Base):

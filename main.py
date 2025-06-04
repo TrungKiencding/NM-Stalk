@@ -6,6 +6,7 @@ from models.models import State, Item
 from agents.crawl import crawl_data
 from agents.process import process_and_tag
 from agents.summarize import summarize_and_write
+from agents.inspect import inspect_content
 from agents.synthesize import synthesize_articles
 from agents.present import present_output
 from utils.ai_client import AIClient
@@ -13,7 +14,12 @@ from models.database import Database
 from config import Config
 import logging
 
-def after_summarize(state: State) -> str:
+def after_inspect(state: State) -> str:
+    """Determine next step after inspection."""
+    if state.next_step == "process":
+        return "process"
+    elif state.next_step == "summarize":
+        return "summarize"
     return "synthesize" if state.session_count % Config.SYNTHESIZE_INTERVAL == 0 else "present"
 
 def main():
@@ -25,20 +31,27 @@ def main():
         graph.add_node("crawl", crawl_data)
         graph.add_node("process", lambda state: process_and_tag(state, llm))
         graph.add_node("summarize", lambda state: summarize_and_write(state, llm))
+        graph.add_node("inspect", lambda state: inspect_content(state, llm))
         graph.add_node("synthesize", lambda state: synthesize_articles(state, db, llm))
         graph.add_node("present", present_output)
 
         # Set up the flow
         graph.add_edge("crawl", "process")
         graph.add_edge("process", "summarize")
+        graph.add_edge("summarize", "inspect")
+        
+        # Add edges from inspect node
         graph.add_conditional_edges(
-            "summarize",
-            after_summarize,
+            "inspect",
+            after_inspect,
             {
+                "process": "process",
+                "summarize": "summarize",
                 "synthesize": "synthesize",
                 "present": "present"
             }
         )
+        
         graph.add_edge("synthesize", "present")
         graph.set_entry_point("crawl")
 
