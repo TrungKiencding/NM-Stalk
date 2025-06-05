@@ -1,73 +1,233 @@
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>AI News Updates</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .news-item {
-            margin-bottom: 1rem;
-            padding: 1rem;
-            border: 1px solid #dee2e6;
-            border-radius: 0.25rem;
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --text-color: #2c3e50;
+            --bg-color: #f8f9fa;
+            --code-bg: #f7f9fa;
+            --blockquote-border: #e9ecef;
         }
-        .time-block {
-            background: #f8f9fa;
-            padding: 0.5rem;
-            margin: 1rem 0;
-            border-radius: 0.25rem;
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
         }
-        .realtime-clock {
-            font-size: 2rem;
-            font-weight: bold;
-            text-align: center;
-            padding: 1rem;
-            background: linear-gradient(45deg, #1e3799, #0c2461);
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 2rem 0;
+            margin-bottom: 2rem;
             color: white;
-            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .realtime-clock {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 300;
+            text-align: center;
+            color: white;
             margin: 1rem 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .date-selector {
+            background: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .news-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .news-content {
+            color: var(--text-color);
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .news-content h1,
+        .news-content h2,
+        .news-content h3,
+        .news-content h4,
+        .news-content h5,
+        .news-content h6 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .news-content h1 {
+            font-size: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--blockquote-border);
+        }
+
+        .news-content p {
+            margin-bottom: 1.2rem;
+        }
+
+        .news-content blockquote {
+            border-left: 4px solid var(--blockquote-border);
+            margin: 1.5rem 0;
+            padding: 0.5rem 0 0.5rem 1.5rem;
+            color: #666;
+        }
+
+        .news-content pre,
+        .news-content code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+        }
+
+        .news-content pre {
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .news-content pre code {
+            padding: 0;
+            background: none;
+        }
+
+        .news-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .news-meta {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--blockquote-border);
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        .meta-item {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 1.5rem;
+        }
+
+        .meta-item i {
+            margin-right: 0.5rem;
+            color: var(--accent-color);
+        }
+
+        .source-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .source-link:hover {
+            color: var(--primary-color);
+        }
+
+        .source-link i {
+            margin-left: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .news-card {
+                padding: 1.5rem;
+            }
+            
+            .news-content h1 {
+                font-size: 1.5rem;
+            }
+            
+            .meta-item {
+                display: block;
+                margin-bottom: 0.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <h1 class="text-center mb-4">AI News Updates</h1>
-        
-        <div class="realtime-clock" id="clock"></div>
-        
-        <div class="row">
-            <div class="col-md-3">
-                <input type="date" class="form-control" id="dateSelector" value="{{ selected_date }}">
+    <div class="header">
+        <div class="container">
+            <h1 class="text-center mb-4">AI News Updates</h1>
+            <div class="realtime-clock" id="clock"></div>
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <input type="date" class="form-control date-selector" id="dateSelector" value="{{ selected_date }}">
+                </div>
             </div>
         </div>
+    </div>
 
-        <div id="newsContent">
-            {% if news_by_hour %}
-                {% for hour in sorted_hours %}
-                    <div class="time-block">
-                        <h3>{{ '%02d:00'|format(hour) }}</h3>
-                        {% for item in news_by_hour[hour] %}
-                            <div class="news-item">
-                                <h4>{{ item.title }}</h4>
-                                <p>{{ item.news_snippet }}</p>
-                                {% if item.url %}
-                                    <a href="{{ item.url }}" target="_blank" class="btn btn-sm btn-primary">Source</a>
-                                {% endif %}
-                            </div>
-                        {% endfor %}
+    <div class="news-container">
+        {% if news_items %}
+            {% for item in news_items %}
+                <article class="news-card">
+                    <div class="news-content">
+                        {{ item.news_snippet|safe }}
                     </div>
-                {% endfor %}
-            {% else %}
-                <div class="alert alert-info">No news articles found for this date.</div>
-            {% endif %}
-        </div>
+                    <div class="news-meta">
+                        <div class="meta-item">
+                            <i class="far fa-clock"></i>
+                            <span>{{ item.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+                        </div>
+                        {% if item.url %}
+                            <div class="meta-item">
+                                <a href="{{ item.url }}" target="_blank" class="source-link">
+                                    Read more <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </article>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info">No news articles found for this date.</div>
+        {% endif %}
     </div>
 
     <script>
         // Update clock
         function updateClock() {
             const now = new Date();
-            document.getElementById('clock').textContent = now.toLocaleTimeString();
+            const options = { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: false 
+            };
+            document.getElementById('clock').textContent = now.toLocaleTimeString([], options);
         }
         setInterval(updateClock, 1000);
         updateClock();

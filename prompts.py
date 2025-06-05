@@ -71,19 +71,17 @@ Your task is to generate a concise news article in {language} based on the input
   • A level-1 title (the article headline)  
   • A bolded one-sentence summary  
   • A rewritten snippet (1–2 paragraphs) that faithfully covers the full content  
-  • A “Read more” link to the source URL  
   • A tag that is relevant to the content
 Inputs:     
   • title: {title}  
   • summary: {summary}   
   • Text: {text}  
-  • url: {url}  
   • tag: {tag}
 Requirements:
   – The snippet must be newly written (not copied verbatim).  
   – Cover all key points from Text.  
   – Keep it concise (1–2 paragraphs).  
-  – Append a Markdown link labeled “Read more” pointing to url.
+
   - No need to rewrite the tag, the title and summary.
 Example Output (Markdown):
 # Qwen2.5-VL: A New Multimodal Open-Source Model
@@ -92,7 +90,6 @@ Example Output (Markdown):
 **Snippet:**  
 QwenLM’s new Qwen2.5-VL package merges state-of-the-art vision and language capabilities into a single open-source framework. Designed for quick setup, it delivers top performance on benchmarks such as image captioning and visual question answering, and offers seamless access via Python APIs. With thorough documentation and step-by-step installation guides, developers can clone the repo, install dependencies, and start experimenting in minutes.
 
-[Read more](https://github.com/QwenLM/Qwen2.5-VL)
 
 **Tag:** LLMs, Vision-Language Models, Open-Source Models, Multimodal Models, Computer Vision
 """
