@@ -5,10 +5,10 @@ from models.database import Database
 from models.models import DBItem
 import logging
 
-def print_news_snippets(db_path="db.sqlite"):
+def print_news_snippets():
     """Display all news snippets from the database."""
     try:
-        db = Database(db_path)
+        db = Database()
         items = db.session.query(DBItem).all()
         
         if not items:

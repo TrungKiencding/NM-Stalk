@@ -24,7 +24,7 @@ def after_inspect(state: State) -> str:
 
 def main():
     try:
-        db = Database(Config.DB_PATH)
+        db = Database()
         llm = AIClient()
 
         graph = StateGraph(State)
@@ -70,4 +70,5 @@ def main():
         raise
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     main()

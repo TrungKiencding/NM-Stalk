@@ -11,7 +11,7 @@
 
 ## Requirements
 
-- SQLite
+- PostgreSQL 14.0 or higher
 - Required Python packages are listed in `requirements.txt`
 
 ## Installation
@@ -33,13 +33,27 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## Enable Azure key
-1. Make sure your .env file has the following configurations:
+4. Set up PostgreSQL:
+   - Install PostgreSQL if not already installed
+   - Create a new database:
 ```bash
-AZURE_OPENAI_ENDPOINT= ''
-AZURE_OPENAI_API_KEY= ''
-AZURE_OPENAI_API_VERSION = ''
-VOYAGE_API_KEY = ''
+createdb netmind_stalk
+```
+
+5. Configure environment variables in .env file:
+```bash
+# Azure OpenAI Settings
+AZURE_OPENAI_ENDPOINT=''
+AZURE_OPENAI_API_KEY=''
+AZURE_OPENAI_API_VERSION=''
+VOYAGE_API_KEY=''
+
+# Database Settings
+DB_USER='postgres'
+DB_PASSWORD='postgres'
+DB_HOST='localhost'
+DB_PORT='5432'
+DB_NAME='netmind_stalk'
 ```
 
 ## Usage
@@ -60,7 +74,6 @@ python scripts/db_summary.py
 NetMind-Stalk/
 ├── models/           # Database models and schemas
 ├── scripts/         # Utility scripts
-├── db.sqlite        # SQLite database
 └── README.md        # This file
 ```
 
