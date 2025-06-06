@@ -5,12 +5,12 @@ from sqlalchemy import create_engine
 from models.models import DBItem
 from sqlalchemy.orm import sessionmaker
 import markdown2
-import re
+from config import Config
 
 app = Flask(__name__)
 
 # Database setup
-engine = create_engine('sqlite:///db.sqlite')
+engine = create_engine(Config.get_database_url())
 Session = sessionmaker(bind=engine)
 
 def clean_markdown(text):

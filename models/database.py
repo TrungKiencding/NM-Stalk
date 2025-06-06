@@ -2,30 +2,23 @@ from datetime import datetime, timedelta
 import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import os
 from typing import List
 import uuid
 from models.models import Base, Item, SynthesizedArticle, DBItem, DBArticle
+from config import Config
 
 class Database:
-    def __init__(self, db_path="db.sqlite"):
+    def __init__(self):
         try:
-            # Convert db_path to absolute path if it's not already
-            if not os.path.isabs(db_path):
-                db_path = os.path.abspath(db_path)
-            
-            # Create database directory if it doesn't exist
-            os.makedirs(os.path.dirname(db_path), exist_ok=True)
-            
-            # Create SQLite database engine
-            self.engine = create_engine(f'sqlite:///{db_path}')
+            # Create PostgreSQL database engine
+            self.engine = create_engine(Config.get_database_url())
             Base.metadata.create_all(self.engine)
             
             # Create session factory
             Session = sessionmaker(bind=self.engine)
             self.session = Session()
             
-            logging.info(f"Database initialized at {db_path}")
+            logging.info(f"Database initialized at {Config.DB_HOST}:{Config.DB_PORT}")
         except Exception as e:
             logging.error(f"Failed to initialize database: {e}")
             raise

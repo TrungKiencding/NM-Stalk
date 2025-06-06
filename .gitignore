@@ -32,8 +32,9 @@ ENV/
 *.swo
 
 # Database
-*.sqlite
-*.db
+*.dump
+*.sql
+*.backup
 
 # Logs
 *.log
