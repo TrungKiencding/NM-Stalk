@@ -27,6 +27,33 @@ def format_tags(tags):
         return []
     return [f"#{tag}" for tag in tags]
 
+def format_related_content(related_content):
+    """Format related content for display"""
+    if not related_content:
+        return []
+    
+    # Only include content that has been successfully enriched
+    filtered_content = [
+        content for content in related_content 
+        if content.get('raw_content') and 
+        content['raw_content'] != '[FAILED to crawl]' and
+        not any(skip_text in content['link'].lower() for skip_text in [
+            'table of contents',
+            'skip to main content',
+            'abstract',
+            '/html/',
+            '/abs/'
+        ])
+    ]
+    
+    return [
+        {
+            'link': content['link'],
+            'raw_content': clean_markdown(content['raw_content'])
+        }
+        for content in filtered_content
+    ]
+
 def get_news_data(selected_date=None):
     session = Session()
     try:
@@ -60,7 +87,8 @@ def index():
             'news_snippet': clean_markdown(item.news_snippet),
             'timestamp': item.timestamp,
             'url': item.url,
-            'content_tags': format_tags(item.content_tags)
+            'content_tags': format_tags(item.content_tags),
+            'related_content': format_related_content(item.related_content)
         }
         processed_items.append(processed_item)
     
@@ -83,7 +111,8 @@ def get_news(date):
             'news_snippet': clean_markdown(item.news_snippet),
             'timestamp': item.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
             'url': item.url,
-            'content_tags': format_tags(item.content_tags)
+            'content_tags': format_tags(item.content_tags),
+            'related_content': format_related_content(item.related_content)
         } for item in news_items]
         
         return jsonify({

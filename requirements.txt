@@ -11,3 +11,5 @@ streamlit==1.45.1
 markdown2==2.5.3
 psycopg2-binary==2.9.10
 alembic==1.16.1
+crawl4ai==0.6.3
+feedparser==6.0.11

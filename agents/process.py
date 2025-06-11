@@ -5,6 +5,7 @@ from utils.ai_client import AIClient
 from models.models import State
 from prompts import TAGGING_PROMPT, TITLE_PROMPT
 import re
+from config import Config
 import logging
 from datetime import datetime
 import asyncio
@@ -41,7 +42,7 @@ def clean_text(text: str) -> str:
 
 def generate_tags(llm: AIClient, text: str, source: str) -> tuple[list[str], list[str]]:
     try:
-        messages = TAGGING_PROMPT.format(text=text)
+        messages = TAGGING_PROMPT.format(text=text, tags=Config.ai_tags)
 
         # Run async function in synchronous context
         response = asyncio.run(llm.get_completion(messages))
