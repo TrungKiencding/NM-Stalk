@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from langgraph.graph import StateGraph
 from models.models import State, Item
-from agents.crawl import crawl_data
+from agents.research_crawler import crawl_data
 from agents.process import process_and_tag
 from agents.summarize import summarize_and_write
 from agents.inspect import inspect_content

@@ -6,6 +6,10 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+class RelatedContent(BaseModel):
+    link: str
+    raw_content: str
+
 # Pydantic Models for API/Data Transfer
 class Item(BaseModel):
     id: str
@@ -20,7 +24,7 @@ class Item(BaseModel):
     timestamp: Optional[datetime] = None
     summary: Optional[str] = None
     news_snippet: Optional[str] = None
-
+    related_content: Optional[List[RelatedContent]] = None
 
 class SynthesizedArticle(BaseModel):
     tag: str
@@ -50,6 +54,7 @@ class DBItem(Base):
     timestamp = Column(DateTime, nullable=True)
     summary = Column(String, nullable=True)
     news_snippet = Column(String, nullable=True)
+    related_content = Column(JSON, nullable=True)
 
     def to_item(self) -> Item:
         return Item(
@@ -65,6 +70,7 @@ class DBItem(Base):
             timestamp=self.timestamp,
             summary=self.summary,
             news_snippet=self.news_snippet,
+            related_content=[RelatedContent(**content) for content in (self.related_content or [])]
         )
 
     @classmethod
@@ -82,6 +88,7 @@ class DBItem(Base):
             timestamp=item.timestamp,
             summary=item.summary,
             news_snippet=item.news_snippet,
+            related_content=[content.dict() for content in (item.related_content or [])]
         )
 
 class DBArticle(Base):
