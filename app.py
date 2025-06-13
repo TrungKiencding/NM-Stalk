@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify
 from datetime import datetime
 import pandas as pd
 from sqlalchemy import create_engine
-from models.models import DBItem
+from models.models import DBItem, DBArticle
 from sqlalchemy.orm import sessionmaker
 import markdown2
 from config import Config
@@ -83,11 +83,30 @@ def get_news_data(selected_date=None):
     finally:
         session.close()
 
+def get_synthesized_articles(selected_date=None):
+    session = Session()
+    try:
+        # Query all synthesized articles ordered by date
+        query = session.query(DBArticle).order_by(DBArticle.date.desc())
+        
+        # If date is provided, filter by date
+        if selected_date:
+            query = query.filter(
+                DBArticle.date >= selected_date.replace(hour=0, minute=0, second=0),
+                DBArticle.date < selected_date.replace(hour=23, minute=59, second=59)
+            )
+        
+        articles = query.all()
+        return articles
+    finally:
+        session.close()
+
 @app.route('/')
 def index():
     # Get today's news
     today = datetime.today()
     news_items = get_news_data(today)
+    synthesized_articles = get_synthesized_articles(today)
     
     # Process each news item
     processed_items = []
@@ -104,9 +123,21 @@ def index():
         }
         processed_items.append(processed_item)
     
+    # Process synthesized articles
+    processed_articles = []
+    for article in synthesized_articles:
+        processed_article = {
+            'id': article.id,
+            'tag': article.tag,
+            'article': clean_markdown(article.article),
+            'date': article.date
+        }
+        processed_articles.append(processed_article)
+    
     return render_template(
         'index.html',
         news_items=processed_items,
+        synthesized_articles=processed_articles,
         selected_date=today.strftime('%Y-%m-%d')
     )
 
@@ -115,6 +146,7 @@ def get_news(date):
     try:
         selected_date = datetime.strptime(date, '%Y-%m-%d')
         news_items = get_news_data(selected_date)
+        synthesized_articles = get_synthesized_articles(selected_date)
         
         # Convert to dictionary for JSON response
         news_data = [{
@@ -128,10 +160,19 @@ def get_news(date):
             'source': get_source_from_url(item.url)
         } for item in news_items]
         
+        # Convert synthesized articles to dictionary
+        articles_data = [{
+            'id': article.id,
+            'tag': article.tag,
+            'article': clean_markdown(article.article),
+            'date': article.date.strftime('%Y-%m-%d %H:%M:%S')
+        } for article in synthesized_articles]
+        
         return jsonify({
             'status': 'success',
             'count': len(news_data),
-            'data': news_data
+            'data': news_data,
+            'synthesized_articles': articles_data
         })
     except Exception as e:
         return jsonify({

@@ -90,7 +90,7 @@ Example Output (Markdown):
 **Summary:** The Qwen2.5-VL repository on GitHub unveils an advanced vision-language model supporting image-text tasks.
 
 **Snippet:**  
-QwenLM’s new Qwen2.5-VL package merges state-of-the-art vision and language capabilities into a single open-source framework. Designed for quick setup, it delivers top performance on benchmarks such as image captioning and visual question answering, and offers seamless access via Python APIs. With thorough documentation and step-by-step installation guides, developers can clone the repo, install dependencies, and start experimenting in minutes.
+QwenLM's new Qwen2.5-VL package merges state-of-the-art vision and language capabilities into a single open-source framework. Designed for quick setup, it delivers top performance on benchmarks such as image captioning and visual question answering, and offers seamless access via Python APIs. With thorough documentation and step-by-step installation guides, developers can clone the repo, install dependencies, and start experimenting in minutes.
 
 
 **Tag:** LLMs, Vision-Language Models, Open-Source Models, Multimodal Models, Computer Vision
@@ -130,9 +130,43 @@ Note: For each field in "issues", provide a description of the problem if the co
 
 
 SYNTHESIZE_PROMPT = """
-Write a comprehensive synthesis article (3-5 paragraphs) on the topic of {tag}, based on the following recent developments:
+You are an expert AI researcher and analyst. Your task is to write a comprehensive, in-depth analysis article based on a group of related research papers and articles.
 
+Topic/Field: {tag}
+
+Related Articles:
 {content}
 
-Provide an overview, connect the dots between developments, and offer a brief perspective.
+Article Relationships:
+{relationships}
+
+Please write a detailed analysis article that includes:
+
+1. Introduction and Context (1-2 paragraphs)
+   - Provide background on the field/topic
+   - Explain why this research area is important
+   - Set up the context for the analysis
+
+2. Key Developments and Findings (2-3 paragraphs)
+   - Analyze the main contributions from each article
+   - Identify common themes and patterns
+   - Highlight unique or innovative approaches
+   - Discuss methodological connections between papers
+
+3. Comparative Analysis (2-3 paragraphs)
+   - Compare and contrast different approaches
+   - Evaluate strengths and limitations
+   - Identify gaps in current research
+   - Discuss how the papers complement each other
+
+4. Future Directions and Implications (1-2 paragraphs)
+   - Suggest potential future research directions
+   - Discuss broader implications for the field
+   - Consider practical applications and impact
+
+5. Conclusion (1 paragraph)
+   - Summarize key insights
+   - Provide a forward-looking perspective
+
+The analysis should be well-structured, technically accurate, and provide deep insights into the relationships between the papers. Use academic language while remaining accessible to a technical audience.
 """

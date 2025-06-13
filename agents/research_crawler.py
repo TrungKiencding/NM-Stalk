@@ -61,7 +61,7 @@ class ResearchCrawler:
                         url=f"https://github.com/{repo}",
                         title=repo,
                         content_snippet=data["content"],
-                        publication_date=None,
+                        publication_date=datetime.now(timezone.utc),
                         source="GitHub",
                         timestamp=datetime.now(timezone.utc),
                         related_content=related_content
@@ -89,7 +89,7 @@ class ResearchCrawler:
                     url=link,
                     title=title,
                     content_snippet=abstract,
-                    publication_date=None,
+                    publication_date=datetime.now(timezone.utc),
                     source="arXiv",
                     timestamp=datetime.now(timezone.utc),
                     related_content=related_content
@@ -118,7 +118,7 @@ class ResearchCrawler:
                                 url=link,
                                 title=None,  
                                 content_snippet=post,
-                                publication_date=None,
+                                publication_date=datetime.now(timezone.utc),
                                 source="Facebook",
                                 timestamp=datetime.now(timezone.utc),
                                 related_content=related_content

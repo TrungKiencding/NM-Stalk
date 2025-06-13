@@ -24,6 +24,8 @@ class Config:
     DB_HOST = os.getenv("DB_HOST", "localhost")
     DB_PORT = os.getenv("DB_PORT", "5432")
     DB_NAME = os.getenv("DB_NAME", "netmind_stalk")
+    DB_USER = os.getenv("DB_USER", "postgres")
+    DB_PASSWORD = os.getenv("DB_PASSWORD", "postgres")
 
     LANGUAGE = "Vietnamese"
     
@@ -32,10 +34,7 @@ class Config:
     def get_database_url(cls):
         return f"postgresql://{cls.DB_USER}:{cls.DB_PASSWORD}@{cls.DB_HOST}:{cls.DB_PORT}/{cls.DB_NAME}"
 
-    # Application Settings
     NOVELTY_DAYS = 7
-    NOVELTY_THRESHOLD = 0.5
-    SYNTHESIZE_INTERVAL = 10
 
     # ArXiv Settings
     ARXIV_SUBJECT = "cs.AI"

@@ -20,7 +20,7 @@ def after_inspect(state: State) -> str:
         return "process"
     elif state.next_step == "summarize":
         return "summarize"
-    return "synthesize" if state.session_count % Config.SYNTHESIZE_INTERVAL == 0 else "present"
+    return "synthesize" 
 
 def main():
     try:
@@ -35,16 +35,17 @@ def main():
         graph.add_node("synthesize", lambda state: synthesize_articles(state, db, llm))
         graph.add_node("present", present_output)
 
-        # Set up the flow
+        # Set up the main flow
         graph.add_edge("crawl", "process")
         graph.add_edge("process", "summarize")
         graph.add_edge("summarize", "inspect")
         
-        # Add edges from inspect node
+        # Add conditional edges from inspect
         graph.add_conditional_edges(
             "inspect",
             after_inspect,
             {
+                "crawl": "crawl",
                 "process": "process",
                 "summarize": "summarize",
                 "synthesize": "synthesize",
@@ -55,20 +56,39 @@ def main():
         graph.add_edge("synthesize", "present")
         graph.set_entry_point("crawl")
 
+        # Compile the graph
         app = graph.compile()
 
+        # Initialize and run the workflow
         initial_state = State(session_count=1)
         final_state = app.invoke(initial_state)
-        if final_state and isinstance(final_state, dict) and 'items' in final_state:
-            items_to_save = [Item(**item) if isinstance(item, dict) else item for item in final_state['items']]
-            db.save_items(items_to_save)
+        
+        # Save results to database
+        if final_state and isinstance(final_state, dict):
+            if 'items' in final_state:
+                items_to_save = [Item(**item) if isinstance(item, dict) else item for item in final_state['items']]
+                db.save_items(items_to_save)
+                logging.info(f"Saved {len(items_to_save)} items to database")
+            
+            if 'synthesized_articles' in final_state:
+                for article in final_state['synthesized_articles']:
+                    db.save_article(article)
+                logging.info(f"Saved {len(final_state['synthesized_articles'])} synthesized articles")
+            
             logging.info("Execution completed successfully")
         else:
             logging.warning("No items to save in final state")
+            
     except Exception as e:
         logging.error(f"Main execution failed: {e}")
         raise
+    finally:
+        if 'db' in locals():
+            db.session.close()
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
     main()

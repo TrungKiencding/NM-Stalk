@@ -150,6 +150,47 @@
         .filter-btn.active[data-source="all"] {
             background-color: #495057;
         }
+        .synthesized-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e1e8f0;
+        }
+        .synthesized-section h2 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .synthesized-article {
+            background: white;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        .synthesized-article:hover {
+            transform: translateY(-2px);
+        }
+        .synthesized-article .tag {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background-color: #3498db;
+            color: white;
+            border-radius: 2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .synthesized-article .date {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        .synthesized-article .content {
+            line-height: 1.8;
+            color: #34495e;
+        }
     </style>
 </head>
 <body>
@@ -180,7 +221,23 @@
             </div>
             {% endfor %}
         </div>
+
+        {% if synthesized_articles %}
+        <div class="synthesized-section">
+            <h2>Synthesized Analysis</h2>
+            <div id="synthesizedContainer">
+                {% for article in synthesized_articles %}
+                <div class="synthesized-article">
+                    <div class="tag">#{{ article.tag }}</div>
+                    <div class="date">{{ article.date.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                    <div class="content">{{ article.article | safe }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </div>
+
     <script>
         let currentSource = 'all';
         
@@ -225,6 +282,28 @@
                                 </div>
                             </div>
                         `).join('');
+
+                        const synthesizedContainer = document.getElementById('synthesizedContainer');
+                        if (data.synthesized_articles && data.synthesized_articles.length > 0) {
+                            if (!synthesizedContainer) {
+                                const section = document.createElement('div');
+                                section.className = 'synthesized-section';
+                                section.innerHTML = `
+                                    <h2>Synthesized Analysis</h2>
+                                    <div id="synthesizedContainer"></div>
+                                `;
+                                container.parentNode.appendChild(section);
+                            }
+                            document.getElementById('synthesizedContainer').innerHTML = data.synthesized_articles.map(article => `
+                                <div class="synthesized-article">
+                                    <div class="tag">#${article.tag}</div>
+                                    <div class="date">${article.date}</div>
+                                    <div class="content">${article.article}</div>
+                                </div>
+                            `).join('');
+                        } else if (synthesizedContainer) {
+                            synthesizedContainer.parentNode.remove();
+                        }
                         updateFilters();
                     }
                 });
