@@ -41,7 +41,7 @@ class Config:
     ARXIV_MAX_RESULTS = 5
     
     # Github Settings
-    GITHUB_MAX_REPOS = 2
+    GITHUB_MAX_REPOS = 5
 
     # Facebook Settings
     FACEBOOK_EMAIL = os.getenv("FACEBOOK_EMAIL")

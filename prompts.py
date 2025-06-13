@@ -100,7 +100,7 @@ QwenLM's new Qwen2.5-VL package merges state-of-the-art vision and language capa
 INSPECTION_PROMPT = """
 You are an expert content inspector. Your task is to validate the quality and accuracy of AI-generated content.
 Please analyze the following content and identify any issues with:
-1. Title: Check if it accurately represents the content and is not misleading
+1. Title: Check if it accurately represents the content are math with original content
 2. Tags: Verify if they are relevant and appropriate
 3. Summary: Ensure it captures the main points without hallucinations or inaccuracies
 4. News Snippet: Confirm it faithfully represents the original content
