@@ -101,6 +101,28 @@ def get_synthesized_articles(selected_date=None):
     finally:
         session.close()
 
+def process_item(item):
+    """Process a single news item for display"""
+    return {
+        'id': item.id,
+        'title': clean_markdown(item.title),
+        'news_snippet': clean_markdown(item.news_snippet),
+        'timestamp': item.timestamp,
+        'url': item.url,
+        'content_tags': format_tags(item.content_tags),
+        'related_content': format_related_content(item.related_content),
+        'source': get_source_from_url(item.url)
+    }
+
+def process_article(article):
+    """Process a single synthesized article for display"""
+    return {
+        'id': article.id,
+        'tag': article.tag,
+        'article': clean_markdown(article.article),
+        'date': article.date
+    }
+
 @app.route('/')
 def index():
     # Get today's news
@@ -108,31 +130,9 @@ def index():
     news_items = get_news_data(today)
     synthesized_articles = get_synthesized_articles(today)
     
-    # Process each news item
-    processed_items = []
-    for item in news_items:
-        processed_item = {
-            'id': item.id,
-            'title': clean_markdown(item.title),
-            'news_snippet': clean_markdown(item.news_snippet),
-            'timestamp': item.timestamp,
-            'url': item.url,
-            'content_tags': format_tags(item.content_tags),
-            'related_content': format_related_content(item.related_content),
-            'source': get_source_from_url(item.url)
-        }
-        processed_items.append(processed_item)
-    
-    # Process synthesized articles
-    processed_articles = []
-    for article in synthesized_articles:
-        processed_article = {
-            'id': article.id,
-            'tag': article.tag,
-            'article': clean_markdown(article.article),
-            'date': article.date
-        }
-        processed_articles.append(processed_article)
+    # Process items and articles
+    processed_items = [process_item(item) for item in news_items]
+    processed_articles = [process_article(article) for article in synthesized_articles]
     
     return render_template(
         'index.html',
@@ -148,25 +148,9 @@ def get_news(date):
         news_items = get_news_data(selected_date)
         synthesized_articles = get_synthesized_articles(selected_date)
         
-        # Convert to dictionary for JSON response
-        news_data = [{
-            'id': item.id,
-            'title': clean_markdown(item.title),
-            'news_snippet': clean_markdown(item.news_snippet),
-            'timestamp': item.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-            'url': item.url,
-            'content_tags': format_tags(item.content_tags),
-            'related_content': format_related_content(item.related_content),
-            'source': get_source_from_url(item.url)
-        } for item in news_items]
-        
-        # Convert synthesized articles to dictionary
-        articles_data = [{
-            'id': article.id,
-            'tag': article.tag,
-            'article': clean_markdown(article.article),
-            'date': article.date.strftime('%Y-%m-%d %H:%M:%S')
-        } for article in synthesized_articles]
+        # Process items and articles
+        news_data = [process_item(item) for item in news_items]
+        articles_data = [process_article(article) for article in synthesized_articles]
         
         return jsonify({
             'status': 'success',
