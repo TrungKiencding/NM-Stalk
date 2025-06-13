@@ -16,7 +16,7 @@ class Item(BaseModel):
     url: str
     title: Optional[str] = None
     content_snippet: str
-    publication_date: datetime
+    publication_date: Optional[datetime] = None
     cleaned_text: Optional[str] = None
     content_tags: Optional[List[str]] = None
     source: Optional[str] = None

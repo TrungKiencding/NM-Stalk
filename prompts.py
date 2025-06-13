@@ -10,13 +10,15 @@ You are a specialized AI assistant for tagging AI-related content. Your primary 
     * You may select **up to a maximum of 5 tags**.
     * If fewer than 5 tags are strongly relevant, select only those relevant tags.
     * If no tags from the list are relevant to the text, return at least one tag.
+    * If the text is not AI-related, return "general".
+    * Uppercase the tags.
 3.  **Output Format:** Return the selected content tags as a list of strings.
 
 **Example Input Text (hypothetical text):**
 "OpenAI's latest GPT-4 model shows impressive advancements in natural language understanding and generation, making it a powerful tool for developers building chatbots and other NLP applications. This transformer-based architecture continues to push the boundaries of what's possible in AI."
 
 **Example Output:**
-llm, nlp, openai, transformers, gpt
+LLM, NLP, OPENAI, TRANSFORMERS, GPT
 
 ---
 
@@ -30,8 +32,8 @@ You are a specialized AI assistant for generating titles. Your primary function 
 Read the following content and generate a one-sentence title that thoroughly encapsulates the core message and key details of the text. 
 **Detailed requirements:**
 1. The title should be clear, complete, and fully representative of the passage. 
-2. The title should be same language as the text.
-3. The title should be no more than 15 words.
+2. The title should be in {language}.
+3. The title should be no more than 10 words.
 4. Your response must include only the title and nothing else.
 
 **Input Text:**
@@ -50,7 +52,7 @@ Summarize the following content into a short paragraph that is concise and highl
 
 2. Maximum length: 1-2 sentences.
 
-3. Language: Standard, clear, and fluent English.
+3. Language: {language}.
 
 4. Output format: One single paragraph, no line breaks, no special characters or bullet points.
 
@@ -66,11 +68,11 @@ NEWS_SNIPPET_PROMPT = """
 You are an expert in writing short news articles.
 
 Your task is to generate a concise news article in {language} based on the inputs provided below. The output must be in Markdown and include:
-
   • A level-1 title (the article headline)  
   • A bolded one-sentence summary  
-  • A rewritten snippet (1–2 paragraphs) that faithfully covers the full content  
+  • A rewritten snippet (2-3 paragraphs) that faithfully covers the full content  
   • A tag that is relevant to the content
+
 Inputs:     
   • title: {title}  
   • summary: {summary}   
@@ -81,7 +83,8 @@ Requirements:
   – Cover all key points from Text.  
   – Keep it concise (1–2 paragraphs).  
   - No need to rewrite the tag, the title and summary.
-  - remove the '[]' from the tag.
+  - No need to translate the tag, the title and summary.
+  - Remove the '[]' from the tag.
 Example Output (Markdown):
 # Qwen2.5-VL: A New Multimodal Open-Source Model
 **Summary:** The Qwen2.5-VL repository on GitHub unveils an advanced vision-language model supporting image-text tasks.

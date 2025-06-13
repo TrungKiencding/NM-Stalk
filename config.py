@@ -25,10 +25,7 @@ class Config:
     DB_PORT = os.getenv("DB_PORT", "5432")
     DB_NAME = os.getenv("DB_NAME", "netmind_stalk")
 
-    # Facebook Settings
-    FACEBOOK_EMAIL = os.getenv("FACEBOOK_EMAIL")
-    FACEBOOK_PASSWORD = os.getenv("FACEBOOK_PASSWORD")
-    FACEBOOK_PAGES = os.getenv("FACEBOOK_PAGES", "").split(",") if os.getenv("FACEBOOK_PAGES") else []
+    LANGUAGE = "Vietnamese"
     
     # Database URL
     @classmethod
@@ -40,6 +37,19 @@ class Config:
     NOVELTY_THRESHOLD = 0.5
     SYNTHESIZE_INTERVAL = 10
 
+    # ArXiv Settings
+    ARXIV_SUBJECT = "cs.AI"
+    ARXIV_MAX_RESULTS = 5
+    
+    # Github Settings
+    GITHUB_MAX_REPOS = 2
+
+    # Facebook Settings
+    FACEBOOK_EMAIL = os.getenv("FACEBOOK_EMAIL")
+    FACEBOOK_PASSWORD = os.getenv("FACEBOOK_PASSWORD")
+    FACEBOOK_PAGES = os.getenv("FACEBOOK_PAGES", "").split(",") if os.getenv("FACEBOOK_PAGES") else []
+    MAX_FACEBOOK_POSTS = 4
+    
     # Tagging Settings
     ai_tags = [
         "artificial-intelligence",

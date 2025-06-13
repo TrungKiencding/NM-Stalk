@@ -47,21 +47,21 @@ class ResearchCrawler:
         """Main crawling function that combines GitHub, arXiv, and Facebook data with enrichment."""
         try:
             # Get trending GitHub repositories
-            repos = self.github_crawler.fetch_trending_repos(max_repos=3)
+            repos = self.github_crawler.fetch_trending_repos(max_repos=Config.GITHUB_MAX_REPOS)
             github_items = []
             
             for repo in repos:
                 data = self.github_crawler.grab_readme(repo)
                 if data["content"]:
                     # Get related content
-                    related_content = self.enrich_content(data["content"][:500])  # Use first 500 chars for search
-                    
+                    #related_content = self.enrich_content(data["content"][:500])  # Use first 500 chars for search
+                    related_content = []
                     item = Item(
                         id=str(uuid.uuid4()),
                         url=f"https://github.com/{repo}",
                         title=repo,
                         content_snippet=data["content"],
-                        publication_date=datetime.now(timezone.utc),
+                        publication_date=None,
                         source="GitHub",
                         timestamp=datetime.now(timezone.utc),
                         related_content=related_content
@@ -72,23 +72,24 @@ class ResearchCrawler:
             end = datetime.now(timezone.utc)
             start = end - timedelta(days=1)
             links, abstracts, titles = self.arxiv_crawler.get_papers_by_subject_and_dates(
-                subject="cs.AI",  # Computer Science - Artificial Intelligence
+                subject=Config.ARXIV_SUBJECT, 
                 start=start,
                 end=end,
-                max_results=3
+                max_results=Config.ARXIV_MAX_RESULTS
             )
 
             arxiv_items = []
             for link, abstract, title in zip(links, abstracts, titles):
                 # Get related content
-                related_content = self.enrich_content(abstract)
+                #related_content = self.enrich_content(abstract)
+                related_content = []
                 
                 item = Item(
                     id=str(uuid.uuid4()),
                     url=link,
                     title=title,
                     content_snippet=abstract,
-                    publication_date=datetime.now(timezone.utc),
+                    publication_date=None,
                     source="arXiv",
                     timestamp=datetime.now(timezone.utc),
                     related_content=related_content
@@ -102,21 +103,22 @@ class ResearchCrawler:
                     try:
                         posts, links, _ = self.facebook_crawler.get_posts_from_page(
                             page_url=page_url,
-                            max_posts=3,
+                            max_posts=Config.MAX_FACEBOOK_POSTS,
                             email=getattr(Config, 'FACEBOOK_EMAIL', None),
                             password=getattr(Config, 'FACEBOOK_PASSWORD', None)
                         )
                         
                         for post, link in zip(posts, links):
                             # Get related content
-                            related_content = self.enrich_content(post[:500])  # Use first 500 chars for search
+                            #related_content = self.enrich_content(post[:500])  # Use first 500 chars for search
+                            related_content = []
                             
                             item = Item(
                                 id=str(uuid.uuid4()),
                                 url=link,
-                                title=f"Facebook Post from {page_url}",  # Generic title since posts don't have titles
+                                title=None,  
                                 content_snippet=post,
-                                publication_date=datetime.now(timezone.utc),
+                                publication_date=None,
                                 source="Facebook",
                                 timestamp=datetime.now(timezone.utc),
                                 related_content=related_content
