@@ -54,6 +54,17 @@ def format_related_content(related_content):
         for content in filtered_content
     ]
 
+def get_source_from_url(url):
+    """Determine the source platform from the URL"""
+    url_lower = url.lower()
+    if 'facebook.com' in url_lower:
+        return 'facebook'
+    elif 'github.com' in url_lower:
+        return 'github'
+    elif 'arxiv.org' in url_lower:
+        return 'arxiv'
+    return 'other'
+
 def get_news_data(selected_date=None):
     session = Session()
     try:
@@ -88,7 +99,8 @@ def index():
             'timestamp': item.timestamp,
             'url': item.url,
             'content_tags': format_tags(item.content_tags),
-            'related_content': format_related_content(item.related_content)
+            'related_content': format_related_content(item.related_content),
+            'source': get_source_from_url(item.url)
         }
         processed_items.append(processed_item)
     
@@ -112,7 +124,8 @@ def get_news(date):
             'timestamp': item.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
             'url': item.url,
             'content_tags': format_tags(item.content_tags),
-            'related_content': format_related_content(item.related_content)
+            'related_content': format_related_content(item.related_content),
+            'source': get_source_from_url(item.url)
         } for item in news_items]
         
         return jsonify({

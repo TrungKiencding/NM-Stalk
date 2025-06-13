@@ -6,7 +6,7 @@ from models.models import State, Item
 from agents.research_crawler import crawl_data
 from agents.process import process_and_tag
 from agents.summarize import summarize_and_write
-from agents.inspect import inspect_content
+from agents.inspector import inspect_content
 from agents.synthesize import synthesize_articles
 from agents.present import present_output
 from utils.ai_client import AIClient

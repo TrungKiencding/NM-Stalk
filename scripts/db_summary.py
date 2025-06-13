@@ -32,19 +32,19 @@ def print_database_summary():
             print("RESEARCH ITEMS".center(100))
             print("="*100 + "\n")
             
-            for idx, item in enumerate(items, 1):
-                print(f"Item #{idx}")
+        for idx, item in enumerate(items, 1):
+            print(f"Item #{idx}")
                 print(f"ID: {item.id}")
-                print(f"Title: {item.title}")
+            print(f"Title: {item.title}")
                 print(f"Source: {item.source}")
-                print(f"URL: {item.url}")
+            print(f"URL: {item.url}")
                 print(f"Publication Date: {item.publication_date}")
                 print(f"Last Updated: {item.timestamp}")
                 
                 if item.content_tags:
                     print("Tags:", ", ".join(item.content_tags))
                 
-                if item.news_snippet:
+            if item.news_snippet:
                     print("\nNews Snippet:")
                     print("-" * 80)
                     print(item.news_snippet)
@@ -73,7 +73,7 @@ def print_database_summary():
                 print(article.article)
                 print("-" * 80)
                 print("\n" + "-"*100 + "\n")
-                
+            
     except Exception as e:
         logging.error(f"Failed to print database summary: {e}")
         raise

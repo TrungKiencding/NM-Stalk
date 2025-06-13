@@ -33,6 +33,7 @@
             border-radius: 1rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: transform 0.2s ease;
+            position: relative;
         }
         .news-item:hover {
             transform: translateY(-2px);
@@ -72,6 +73,83 @@
             line-height: 1.6;
             color: #34495e;
         }
+        .source-tag {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .source-facebook {
+            background-color: #1877f2;
+            color: white;
+        }
+        .source-github {
+            background-color: #24292e;
+            color: white;
+        }
+        .source-arxiv {
+            background-color: #b31b1b;
+            color: white;
+        }
+        .source-other {
+            background-color: #6c757d;
+            color: white;
+        }
+        .filter-container {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+        }
+        .filter-btn.active {
+            transform: scale(1.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .filter-btn:hover {
+            transform: scale(1.05);
+        }
+        .filter-btn[data-source="facebook"] {
+            background-color: #1877f2;
+        }
+        .filter-btn[data-source="github"] {
+            background-color: #24292e;
+        }
+        .filter-btn[data-source="arxiv"] {
+            background-color: #b31b1b;
+        }
+        .filter-btn[data-source="all"] {
+            background-color: #6c757d;
+        }
+        .filter-btn.active[data-source="facebook"] {
+            background-color: #0d6efd;
+        }
+        .filter-btn.active[data-source="github"] {
+            background-color: #1a1e21;
+        }
+        .filter-btn.active[data-source="arxiv"] {
+            background-color: #8b1515;
+        }
+        .filter-btn.active[data-source="all"] {
+            background-color: #495057;
+        }
     </style>
 </head>
 <body>
@@ -84,9 +162,16 @@
         <div class="date-selector">
             <input type="date" id="dateSelector" value="{{ selected_date }}" class="form-control">
         </div>
+        <div class="filter-container">
+            <button class="filter-btn active" data-source="all">All Sources</button>
+            <button class="filter-btn" data-source="facebook">Facebook</button>
+            <button class="filter-btn" data-source="github">GitHub</button>
+            <button class="filter-btn" data-source="arxiv">arXiv</button>
+        </div>
         <div id="newsContainer">
             {% for item in news_items %}
-            <div class="news-item">
+            <div class="news-item" data-source="{{ item.source }}">
+                <div class="source-tag source-{{ item.source }}">{{ item.source }}</div>
                 <p class="timestamp">{{ item.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
                 <div class="content">{{ item.news_snippet | safe }}</div>
                 <div class="article-footer">
@@ -97,6 +182,32 @@
         </div>
     </div>
     <script>
+        let currentSource = 'all';
+        
+        function updateFilters() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.source === currentSource) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            document.querySelectorAll('.news-item').forEach(item => {
+                if (currentSource === 'all' || item.dataset.source === currentSource) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentSource = this.dataset.source;
+                updateFilters();
+            });
+        });
+
         document.getElementById('dateSelector').addEventListener('change', function(e) {
             fetch('/api/news/' + e.target.value)
                 .then(response => response.json())
@@ -104,7 +215,8 @@
                     if (data.status === 'success') {
                         const container = document.getElementById('newsContainer');
                         container.innerHTML = data.data.map(item => `
-                            <div class="news-item">
+                            <div class="news-item" data-source="${item.source}">
+                                <div class="source-tag source-${item.source}">${item.source}</div>
                                 <h2>${item.title}</h2>
                                 <p class="timestamp">${item.timestamp}</p>
                                 <div class="content">${item.news_snippet}</div>
@@ -113,6 +225,7 @@
                                 </div>
                             </div>
                         `).join('');
+                        updateFilters();
                     }
                 });
         });

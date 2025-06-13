@@ -12,6 +12,8 @@ from tools.search_tools import SearchTools
 from tools.content_extractor import ContentExtractor
 from crawlers.github_crawler import GitHubCrawler
 from crawlers.arxiv_crawler import ArXivCrawler
+from crawlers.facebook_crawler import FacebookCrawler
+from config import Config
 
 class ResearchCrawler:
     def __init__(self):
@@ -19,6 +21,7 @@ class ResearchCrawler:
         self.content_extractor = ContentExtractor()
         self.github_crawler = GitHubCrawler()
         self.arxiv_crawler = ArXivCrawler()
+        self.facebook_crawler = FacebookCrawler()
 
     def enrich_content(self, content: str, max_related: int = 3) -> List[Dict[str, str]]:
         """
@@ -41,10 +44,10 @@ class ResearchCrawler:
             return []
 
     def crawl_data(self, state: State) -> State:
-        """Main crawling function that combines GitHub and arXiv data with enrichment."""
+        """Main crawling function that combines GitHub, arXiv, and Facebook data with enrichment."""
         try:
             # Get trending GitHub repositories
-            repos = self.github_crawler.fetch_trending_repos(max_repos=5)
+            repos = self.github_crawler.fetch_trending_repos(max_repos=3)
             github_items = []
             
             for repo in repos:
@@ -57,7 +60,7 @@ class ResearchCrawler:
                         id=str(uuid.uuid4()),
                         url=f"https://github.com/{repo}",
                         title=repo,
-                        content_snippet=data["content"][:1000],
+                        content_snippet=data["content"],
                         publication_date=datetime.now(timezone.utc),
                         source="GitHub",
                         timestamp=datetime.now(timezone.utc),
@@ -72,7 +75,7 @@ class ResearchCrawler:
                 subject="cs.AI",  # Computer Science - Artificial Intelligence
                 start=start,
                 end=end,
-                max_results=5
+                max_results=3
             )
 
             arxiv_items = []
@@ -92,11 +95,49 @@ class ResearchCrawler:
                 )
                 arxiv_items.append(item)
 
+            # Get Facebook posts
+            facebook_items = []
+            if hasattr(Config, 'FACEBOOK_PAGES') and Config.FACEBOOK_PAGES:
+                for page_url in Config.FACEBOOK_PAGES:
+                    try:
+                        posts, links, _ = self.facebook_crawler.get_posts_from_page(
+                            page_url=page_url,
+                            max_posts=3,
+                            email=getattr(Config, 'FACEBOOK_EMAIL', None),
+                            password=getattr(Config, 'FACEBOOK_PASSWORD', None)
+                        )
+                        
+                        for post, link in zip(posts, links):
+                            # Get related content
+                            related_content = self.enrich_content(post[:500])  # Use first 500 chars for search
+                            
+                            item = Item(
+                                id=str(uuid.uuid4()),
+                                url=link,
+                                title=f"Facebook Post from {page_url}",  # Generic title since posts don't have titles
+                                content_snippet=post,
+                                publication_date=datetime.now(timezone.utc),
+                                source="Facebook",
+                                timestamp=datetime.now(timezone.utc),
+                                related_content=related_content
+                            )
+                            facebook_items.append(item)
+                    except Exception as e:
+                        logging.error(f"Error crawling Facebook page {page_url}: {e}")
+
             # Combine all items
             state.items.extend(github_items)
             state.items.extend(arxiv_items)
+            state.items.extend(facebook_items)
             
-            logging.info(f"Crawled {len(github_items)} GitHub repos and {len(arxiv_items)} arXiv papers")
+            for item in state.items:
+                print(item.title)
+                print(item.url)
+                print(item.content_snippet)
+                print(item.related_content)
+                print("-"*100)
+                
+            logging.info(f"Crawled {len(github_items)} GitHub repos, {len(arxiv_items)} arXiv papers, and {len(facebook_items)} Facebook posts")
             return state
         except Exception as e:
             logging.error(f"Crawl data failed: {e}")
@@ -106,3 +147,7 @@ def crawl_data(state: State) -> State:
     """Entry point function for the agent system."""
     crawler = ResearchCrawler()
     return crawler.crawl_data(state) 
+
+if __name__ == "__main__":
+    state = State()
+    crawl_data(state)
