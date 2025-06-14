@@ -91,8 +91,8 @@ class FacebookCrawler:
                         except Exception as e:
                             pass
                         FacebookCrawler.save_login_state(context)
+                        time.sleep(10)
                         logging.info("Successfully logged in to Facebook")
-                        time.sleep(5)
                     except Exception as e:
                         logging.error(f"Facebook login failed: {e}")
                         return [], [], []
