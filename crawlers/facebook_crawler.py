@@ -87,12 +87,14 @@ class FacebookCrawler:
                             page.get_by_test_id("royal-pass").fill(password)
                             time.sleep(3)
                             page.get_by_test_id("royal-pass").press("Enter")
-                            time.sleep(3)
+                            page.wait_for_load_state("networkidle")
+                            time.sleep(5)  # Wait for login to complete
+                            # Save login state
+                            FacebookCrawler.save_login_state(context)
+                            logging.info("Successfully logged in to Facebook")
                         except Exception as e:
-                            pass
-                        FacebookCrawler.save_login_state(context)
-                        time.sleep(10)
-                        logging.info("Successfully logged in to Facebook")
+                            logging.error(f"Facebook login failed: {e}")
+                            return [], [], []
                     except Exception as e:
                         logging.error(f"Facebook login failed: {e}")
                         return [], [], []
