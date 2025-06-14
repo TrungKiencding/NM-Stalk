@@ -46,7 +46,7 @@ class Config:
     FACEBOOK_EMAIL = os.getenv("FACEBOOK_EMAIL")
     FACEBOOK_PASSWORD = os.getenv("FACEBOOK_PASSWORD")
     FACEBOOK_PAGES = os.getenv("FACEBOOK_PAGES", "").split(",") if os.getenv("FACEBOOK_PAGES") else []
-    MAX_FACEBOOK_POSTS = 4
+    MAX_FACEBOOK_POSTS = 5
     
     # Tagging Settings
     ai_tags = [
