@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, Response
 from datetime import datetime
 import pandas as pd
 from sqlalchemy import create_engine
@@ -6,12 +6,24 @@ from models.models import DBItem, DBArticle
 from sqlalchemy.orm import sessionmaker
 import markdown2
 from config import Config
+from prometheus_client import Counter, Histogram, generate_latest
 
 app = Flask(__name__)
 
 # Database setup
-engine = create_engine(Config.get_database_url())
+engine = create_engine(
+    Config.get_database_url(),
+    pool_size=5,
+    max_overflow=10,
+    pool_timeout=30,
+    pool_pre_ping=True,  # Add connection health check
+    pool_recycle=3600    # Recycle connections after 1 hour
+)
 Session = sessionmaker(bind=engine)
+
+# Add these metrics
+REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests')
+REQUEST_LATENCY = Histogram('http_request_duration_seconds', 'HTTP request latency')
 
 def clean_markdown(text):
     """Clean markdown text for proper HTML rendering"""
@@ -164,6 +176,28 @@ def get_news(date):
             'message': str(e)
         }), 400
 
+@app.route('/metrics')
+def metrics():
+    return Response(generate_latest(), mimetype='text/plain')
+
+def track_metrics(f):
+    def wrapped(*args, **kwargs):
+        REQUEST_COUNT.inc()
+        with REQUEST_LATENCY.time():
+            return f(*args, **kwargs)
+    return wrapped
+
 if __name__ == '__main__':
     # Run the Flask app
-    app.run(debug=True, port=5000) 
+    app.run(host='0.0.0.0', port=5000) 
+
+@app.route('/health')
+def health_check():
+    try:
+        # Verify database connection
+        with Session() as session:
+            session.execute('SELECT 1')
+        return jsonify({'status': 'healthy'}), 200
+    except Exception as e:
+        app.logger.error(f"Health check failed: {str(e)}")
+        return jsonify({'status': 'unhealthy', 'error': str(e)}), 500

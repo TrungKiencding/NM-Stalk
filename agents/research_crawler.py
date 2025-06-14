@@ -128,17 +128,19 @@ class ResearchCrawler:
                         logging.error(f"Error crawling Facebook page {page_url}: {e}")
 
             # Combine all items
+            state.items.extend(facebook_items)
             state.items.extend(github_items)
             state.items.extend(arxiv_items)
-            state.items.extend(facebook_items)
             
+            '''
             for item in state.items:
                 print(item.title)
                 print(item.url)
                 print(item.content_snippet)
                 print(item.related_content)
-                print("-"*100)
-                
+                print("-"*100)  
+            '''
+       
             logging.info(f"Crawled {len(github_items)} GitHub repos, {len(arxiv_items)} arXiv papers, and {len(facebook_items)} Facebook posts")
             return state
         except Exception as e:

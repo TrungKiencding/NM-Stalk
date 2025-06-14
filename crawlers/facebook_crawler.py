@@ -49,7 +49,7 @@ class FacebookCrawler:
         
         try:
             with sync_playwright() as p:
-                browser = p.chromium.launch(headless=False)
+                browser = p.chromium.launch(headless=True)
                 try:
                     if os.path.exists(FacebookCrawler.STATE_FILE):
                         context = browser.new_context(storage_state=FacebookCrawler.STATE_FILE)
