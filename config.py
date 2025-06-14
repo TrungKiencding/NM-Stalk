@@ -37,16 +37,16 @@ class Config:
 
     # ArXiv Settings
     ARXIV_SUBJECT = "cs.AI"
-    ARXIV_MAX_RESULTS = 5
+    ARXIV_MAX_RESULTS = 10
     
     # Github Settings
-    GITHUB_MAX_REPOS = 5
+    GITHUB_MAX_REPOS = 10
 
     # Facebook Settings
     FACEBOOK_EMAIL = os.getenv("FACEBOOK_EMAIL")
     FACEBOOK_PASSWORD = os.getenv("FACEBOOK_PASSWORD")
     FACEBOOK_PAGES = os.getenv("FACEBOOK_PAGES", "").split(",") if os.getenv("FACEBOOK_PAGES") else []
-    MAX_FACEBOOK_POSTS = 5
+    MAX_FACEBOOK_POSTS = 10
     
     # Tagging Settings
     ai_tags = [
