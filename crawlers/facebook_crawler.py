@@ -8,7 +8,7 @@ from datetime import datetime
 import os
 
 class FacebookCrawler:
-    STATE_FILE = "facebook_state/fb_state.json"
+    STATE_FILE = "fb_state.json"
     
     @staticmethod
     def save_login_state(context) -> None:
