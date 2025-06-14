@@ -70,7 +70,7 @@ class ResearchCrawler:
 
             # Get recent arXiv papers (last 24 hours)
             end = datetime.now(timezone.utc)
-            start = end - timedelta(days=1)
+            start = end - timedelta(days=2)
             links, abstracts, titles = self.arxiv_crawler.get_papers_by_subject_and_dates(
                 subject=Config.ARXIV_SUBJECT, 
                 start=start,
