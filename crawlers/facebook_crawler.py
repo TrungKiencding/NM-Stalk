@@ -49,7 +49,8 @@ class FacebookCrawler:
         
         try:
             with sync_playwright() as p:
-                browser = p.chromium.launch(headless=True)
+                browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-setuid-sandbox"])
+                logging.info("Launching Playwright browser")
                 try:
                     if os.path.exists(FacebookCrawler.STATE_FILE):
                         context = browser.new_context(storage_state=FacebookCrawler.STATE_FILE)
@@ -91,6 +92,7 @@ class FacebookCrawler:
                             pass
                         FacebookCrawler.save_login_state(context)
                         logging.info("Successfully logged in to Facebook")
+                        time.sleep(5)
                     except Exception as e:
                         logging.error(f"Facebook login failed: {e}")
                         return [], [], []
@@ -99,6 +101,7 @@ class FacebookCrawler:
                     all_posts = []
                     try:
                         page.goto(url)
+                        logging.info(f"Visiting page: {url}")
                     except Exception as e:
                         logging.error(f"Failed to load page {url}: {e}")
                         continue
@@ -106,7 +109,8 @@ class FacebookCrawler:
                     while len(all_posts) < max_posts:
                         try:
                             soup = BeautifulSoup(page.content(), "html.parser")
-                            # Get containers of posts    
+                            # Get containers of posts
+                            logging.info("Parsing page content for posts")    
                             containers = soup.find_all(
                                 lambda tag: (
                                     tag.name == "div"
