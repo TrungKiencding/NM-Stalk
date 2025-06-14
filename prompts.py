@@ -5,19 +5,20 @@ You are a specialized AI assistant for tagging AI-related content. Your primary 
 
 1.  **Analyze Text:** Carefully examine the provided text.
 2.  **Tag Selection:**
-    * You **MUST** choose tags *exclusively* from the following list:
-        `["machine-learning", "deep-learning", "vlm", "llm", "nlp", "computer-vision", "chatgpt", "rag", "openai", "stable-diffusion", "text-to-speech", "speech-recognition", "reinforcement-learning", "ai-agents", "multimodal", "data-science", "python", "transformers", "gpt", "image-generation", "autonomous-agents", "webui", "fintech-ai", "healthtech-ai", "ai-infrastructure", "ai-devtools", "ai-hardware", "generative-ai", "voice-cloning", "prompt-engineering", "vision-language-models", "open-source-ai"]`
+    * You **MUST** choose tags *exclusively* from the following list: {tags}
     * Select the **most relevant** tags that accurately describe the core topics of the text.
     * You may select **up to a maximum of 5 tags**.
     * If fewer than 5 tags are strongly relevant, select only those relevant tags.
     * If no tags from the list are relevant to the text, return at least one tag.
-3.  **Output Format:** Return the selected content tags as a Python list of strings.
+    * If the text is not AI-related, return "general".
+    * Uppercase the tags.
+3.  **Output Format:** Return the selected content tags as a list of strings.
 
 **Example Input Text (hypothetical text):**
 "OpenAI's latest GPT-4 model shows impressive advancements in natural language understanding and generation, making it a powerful tool for developers building chatbots and other NLP applications. This transformer-based architecture continues to push the boundaries of what's possible in AI."
 
 **Example Output:**
-`["llm", "nlp", "openai", "transformers", "gpt"]`
+LLM, NLP, OPENAI, TRANSFORMERS, GPT
 
 ---
 
@@ -31,8 +32,8 @@ You are a specialized AI assistant for generating titles. Your primary function 
 Read the following content and generate a one-sentence title that thoroughly encapsulates the core message and key details of the text. 
 **Detailed requirements:**
 1. The title should be clear, complete, and fully representative of the passage. 
-2. The title should be same language as the text.
-3. The title should be no more than 15 words.
+2. The title should be in {language}.
+3. The title should be no more than 10 words.
 4. Your response must include only the title and nothing else.
 
 **Input Text:**
@@ -51,7 +52,7 @@ Summarize the following content into a short paragraph that is concise and highl
 
 2. Maximum length: 1-2 sentences.
 
-3. Language: Standard, clear, and fluent English.
+3. Language: {language}.
 
 4. Output format: One single paragraph, no line breaks, no special characters or bullet points.
 
@@ -67,40 +68,105 @@ NEWS_SNIPPET_PROMPT = """
 You are an expert in writing short news articles.
 
 Your task is to generate a concise news article in {language} based on the inputs provided below. The output must be in Markdown and include:
-
   • A level-1 title (the article headline)  
   • A bolded one-sentence summary  
-  • A rewritten snippet (1–2 paragraphs) that faithfully covers the full content  
-  • A “Read more” link to the source URL  
+  • A rewritten snippet (2-3 paragraphs) that faithfully covers the full content  
   • A tag that is relevant to the content
+
 Inputs:     
   • title: {title}  
   • summary: {summary}   
   • Text: {text}  
-  • url: {url}  
   • tag: {tag}
 Requirements:
   – The snippet must be newly written (not copied verbatim).  
   – Cover all key points from Text.  
   – Keep it concise (1–2 paragraphs).  
-  – Append a Markdown link labeled “Read more” pointing to url.
   - No need to rewrite the tag, the title and summary.
+  - No need to translate the tag, the title and summary.
+  - Remove the '[]' from the tag.
 Example Output (Markdown):
 # Qwen2.5-VL: A New Multimodal Open-Source Model
 **Summary:** The Qwen2.5-VL repository on GitHub unveils an advanced vision-language model supporting image-text tasks.
 
 **Snippet:**  
-QwenLM’s new Qwen2.5-VL package merges state-of-the-art vision and language capabilities into a single open-source framework. Designed for quick setup, it delivers top performance on benchmarks such as image captioning and visual question answering, and offers seamless access via Python APIs. With thorough documentation and step-by-step installation guides, developers can clone the repo, install dependencies, and start experimenting in minutes.
+QwenLM's new Qwen2.5-VL package merges state-of-the-art vision and language capabilities into a single open-source framework. Designed for quick setup, it delivers top performance on benchmarks such as image captioning and visual question answering, and offers seamless access via Python APIs. With thorough documentation and step-by-step installation guides, developers can clone the repo, install dependencies, and start experimenting in minutes.
 
-[Read more](https://github.com/QwenLM/Qwen2.5-VL)
 
 **Tag:** LLMs, Vision-Language Models, Open-Source Models, Multimodal Models, Computer Vision
 """
 
-SYNTHESIZE_PROMPT = """
-Write a comprehensive synthesis article (3-5 paragraphs) on the topic of {tag}, based on the following recent developments:
 
+INSPECTION_PROMPT = """
+You are an expert content inspector. Your task is to validate the quality and accuracy of AI-generated content.
+Please analyze the following content and identify any issues with:
+1. Title: Check if it accurately represents the content are math with original content
+2. Tags: Verify if they are relevant and appropriate
+3. Summary: Ensure it captures the main points without hallucinations or inaccuracies
+4. News Snippet: Confirm it faithfully represents the original content
+
+Original Content: {content}
+Generated Title: {title}
+Generated Tags: {tags}
+Generated Summary: {summary}
+Generated News Snippet: {snippet}
+
+**Respond with a JSON object in this format:**  
+{{
+    "title_valid": true,
+    "tags_valid": true,
+    "summary_valid": true,
+    "snippet_valid": true,
+    "issues": {{
+        "title": null,
+        "tags": null,
+        "summary": null,
+        "snippet": null
+    }}
+}}
+
+Note: For each field in "issues", provide a description of the problem if the corresponding *_valid field is false, otherwise leave it as null.
+"""
+
+
+SYNTHESIZE_PROMPT = """
+You are an expert AI researcher and analyst. Your task is to write a comprehensive, in-depth analysis article based on a group of related research papers and articles.
+
+Topic/Field: {tag}
+
+Related Articles:
 {content}
 
-Provide an overview, connect the dots between developments, and offer a brief perspective.
+Article Relationships:
+{relationships}
+
+Please write a detailed analysis article that includes:
+
+1. Introduction and Context (1-2 paragraphs)
+   - Provide background on the field/topic
+   - Explain why this research area is important
+   - Set up the context for the analysis
+
+2. Key Developments and Findings (2-3 paragraphs)
+   - Analyze the main contributions from each article
+   - Identify common themes and patterns
+   - Highlight unique or innovative approaches
+   - Discuss methodological connections between papers
+
+3. Comparative Analysis (2-3 paragraphs)
+   - Compare and contrast different approaches
+   - Evaluate strengths and limitations
+   - Identify gaps in current research
+   - Discuss how the papers complement each other
+
+4. Future Directions and Implications (1-2 paragraphs)
+   - Suggest potential future research directions
+   - Discuss broader implications for the field
+   - Consider practical applications and impact
+
+5. Conclusion (1 paragraph)
+   - Summarize key insights
+   - Provide a forward-looking perspective
+
+The analysis should be well-structured, technically accurate, and provide deep insights into the relationships between the papers. Use academic language while remaining accessible to a technical audience.
 """

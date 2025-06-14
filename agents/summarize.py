@@ -6,16 +6,17 @@ from models.models import State
 from prompts import SUMMARY_PROMPT, NEWS_SNIPPET_PROMPT
 import logging
 import asyncio
+from config import Config
 
 def summarize_and_write(state: State, llm: AIClient) -> State:
     try:
         for item in state.items:
             if  item.summary is None:
-                messages = SUMMARY_PROMPT.format(text=item.cleaned_text)
+                messages = SUMMARY_PROMPT.format(text=item.cleaned_text, language=Config.LANGUAGE)
                 summary_response = asyncio.run(llm.get_completion(messages))
                 item.summary = summary_response
 
-                messages = NEWS_SNIPPET_PROMPT.format(text=item.cleaned_text, summary=item.summary, title=item.title, url=item.url, language='English', tag=item.content_tags)
+                messages = NEWS_SNIPPET_PROMPT.format(text=item.cleaned_text, summary=item.summary, title=item.title, url=item.url, language=Config.LANGUAGE, tag=item.content_tags)
                 snippet_response = asyncio.run(llm.get_completion(messages))
                 item.news_snippet = snippet_response
         logging.info("Summarization and news writing completed")
