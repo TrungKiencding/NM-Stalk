@@ -47,32 +47,34 @@ class ResearchCrawler:
         """Main crawling function that combines GitHub, arXiv, and Facebook data with enrichment."""
         try:
             # Get trending GitHub repositories
-            repos = self.github_crawler.fetch_trending_repos(max_repos=Config.GITHUB_MAX_REPOS)
-            github_items = []
-            
-            for repo in repos:
-                data = self.github_crawler.grab_readme(repo)
-                if data["content"]:
-                    # Get related content
-                    #related_content = self.enrich_content(data["content"][:500])  # Use first 500 chars for search
-                    related_content = []
-                    item = Item(
-                        id=str(uuid.uuid4()),
-                        url=f"https://github.com/{repo}",
-                        title=repo,
-                        content_snippet=data["content"],
-                        publication_date=datetime.now(timezone.utc),
-                        source="GitHub",
-                        timestamp=datetime.now(timezone.utc),
-                        related_content=related_content
-                    )
-                    github_items.append(item)
-
+            try:
+                repos = self.github_crawler.fetch_trending_repos(max_repos=Config.GITHUB_MAX_REPOS)
+                github_items = []
+                
+                for repo in repos:
+                    data = self.github_crawler.grab_readme(repo)
+                    if data["content"]:
+                        # Get related content
+                        #related_content = self.enrich_content(data["content"][:500])  # Use first 500 chars for search
+                        related_content = []
+                        item = Item(
+                            id=str(uuid.uuid4()),
+                            url=f"https://github.com/{repo}",
+                            title=repo,
+                            content_snippet=data["content"],
+                            publication_date=datetime.now(timezone.utc),
+                            source="GitHub",
+                            timestamp=datetime.now(timezone.utc),
+                            related_content=related_content
+                        )
+                        github_items.append(item)
+            except Exception as e:
+                logging.error(f"Error fetching GitHub repositories: {e}")
             # Get recent arXiv papers (last 24 hours)
             end = datetime.now(timezone.utc)
-            start = end - timedelta(days=2)
+            start = end - timedelta(days=3)
             links, abstracts, titles = self.arxiv_crawler.get_papers_by_subject_and_dates(
-                subject=Config.ARXIV_SUBJECT, 
+                subjects=Config.ARXIV_SUBJECT, 
                 start=start,
                 end=end,
                 max_results=Config.ARXIV_MAX_RESULTS
@@ -95,7 +97,6 @@ class ResearchCrawler:
                     related_content=related_content
                 )
                 arxiv_items.append(item)
-
             # Get Facebook posts
             facebook_items = []
             if hasattr(Config, 'FACEBOOK_PAGES') and Config.FACEBOOK_PAGES:

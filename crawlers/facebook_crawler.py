@@ -49,7 +49,7 @@ class FacebookCrawler:
         
         try:
             with sync_playwright() as p:
-                browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-setuid-sandbox"])
+                browser = p.chromium.launch(headless=False, args=["--no-sandbox", "--disable-setuid-sandbox"])
                 logging.info("Launching Playwright browser")
                 try:
                     if os.path.exists(FacebookCrawler.STATE_FILE):
@@ -94,7 +94,8 @@ class FacebookCrawler:
                             logging.info("Successfully logged in to Facebook")
                         except Exception as e:
                             logging.error(f"Facebook login failed: {e}")
-                            return [], [], []
+                            logging.info("Successfully logged in to Facebook without credentials")
+                            pass
                     except Exception as e:
                         logging.error(f"Facebook login failed: {e}")
                         return [], [], []

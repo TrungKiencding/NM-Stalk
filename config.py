@@ -36,8 +36,8 @@ class Config:
     NOVELTY_DAYS = 7
 
     # ArXiv Settings
-    ARXIV_SUBJECT = "cs.AI"
-    ARXIV_MAX_RESULTS = 10
+    ARXIV_SUBJECT = ["cs.AI", "cs.IR", "cs.LG", "cs.MA", "cs.CV", "cs.CL"]
+    ARXIV_MAX_RESULTS = 5
     
     # Github Settings
     GITHUB_MAX_REPOS = 10
@@ -46,7 +46,7 @@ class Config:
     FACEBOOK_EMAIL = os.getenv("FACEBOOK_EMAIL")
     FACEBOOK_PASSWORD = os.getenv("FACEBOOK_PASSWORD")
     FACEBOOK_PAGES = os.getenv("FACEBOOK_PAGES", "").split(",") if os.getenv("FACEBOOK_PAGES") else []
-    MAX_FACEBOOK_POSTS = 10
+    MAX_FACEBOOK_POSTS = 5
     
     # Tagging Settings
     ai_tags = [
