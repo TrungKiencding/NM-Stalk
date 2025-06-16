@@ -57,7 +57,7 @@ class Database:
 
     def save_article(self, article: SynthesizedArticle):
         try:
-            db_article = DBArticle.from_article(article, str(uuid.uuid4()))
+            db_article = DBArticle.from_article(article)
             self.session.add(db_article)
             self.session.commit()
             logging.info(f"Saved article for tag {article.tag}")
