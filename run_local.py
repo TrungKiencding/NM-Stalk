@@ -47,7 +47,7 @@ def main():
     start_web_interface()
 
     # Schedule AI agent to run at 17:00
-    schedule.every().day.at("00:10").do(scheduled_ai_agent)
+    schedule.every().day.at("06:30").do(scheduled_ai_agent)
 
     # Keep the main thread alive and check for scheduled tasks
     try:

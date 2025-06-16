@@ -39,7 +39,7 @@ def find_similar_articles(items: List[Dict], threshold: float = 0.85) -> List[Tu
                 
     return similar_pairs
 
-def check_db_duplicates(state: State, db: Database, threshold: float = 0.5) -> Set[int]:
+def check_db_duplicates(state: State, db: Database, threshold: float = 0.85) -> Set[int]:
     """Check for duplicates between current items and database items"""
     try:
         # Get recent items from database
