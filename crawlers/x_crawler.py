@@ -11,7 +11,6 @@ def fb_scrage():
     posts = []
     links = []
     chrome_path = shutil.which("google-chrome") or shutil.which("chrome")
-#dangloadten1242004@gmail.com
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False,executable_path=chrome_path,)
         try:
