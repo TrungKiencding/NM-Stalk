@@ -52,7 +52,7 @@ class XCrawler:
             chrome_path = shutil.which("google-chrome") or shutil.which("chrome")
             with sync_playwright() as p:
                 browser = p.chromium.launch(
-                    headless=False,
+                    headless=True,
                     executable_path=chrome_path,
                     args=["--no-sandbox", "--disable-setuid-sandbox"]
                 )
