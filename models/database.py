@@ -108,7 +108,8 @@ class Database:
                 prompt = SYNTHESIZE_PROMPT.format(
                     tag=main_tag,
                     content=content,
-                    relationships=relationships_text
+                    relationships=relationships_text,
+                    language=Config.LANGUAGE
                 )
                 
                 article_text = asyncio.run(self.llm.get_completion(prompt))

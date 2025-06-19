@@ -5,7 +5,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import logging
 
 class SemanticAnalyzer:
-    def __init__(self, similarity_threshold: float = 0.7):
+    def __init__(self, similarity_threshold: float = 0.8):
         self.similarity_threshold = similarity_threshold
 
     def group_related_articles(self, items: List[Item]) -> List[List[Item]]:

@@ -23,6 +23,9 @@ def after_inspect(state: State) -> str:
     valid_steps = {"crawl", "process", "summarize", "synthesize", "present"}
     next_step = state.next_step or "synthesize"
     
+    if next_step == "continue":
+        return "synthesize"  # If no issues found, proceed to synthesis
+    
     if next_step not in valid_steps:
         logging.warning(f"Invalid next step '{next_step}', defaulting to 'synthesize'")
         return "synthesize"

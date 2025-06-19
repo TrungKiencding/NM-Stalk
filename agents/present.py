@@ -14,7 +14,8 @@ def get_source_priority(source: str) -> int:
     priorities = {
         "GitHub": 0,
         "arXiv": 1,
-        "Facebook": 2
+        "Facebook": 2,
+        "X": 3
     }
     return priorities.get(source, 999)  # Unknown sources get lowest priority
 
@@ -111,13 +112,32 @@ def filter_duplicates(state: State, db: Database) -> State:
         logging.error(f"Error filtering duplicates: {e}")
         raise
 
+def filter_incomplete_items(state: State) -> State:
+    """Filter out items that are missing required fields (title, news_snippet, or URL)"""
+    try:
+        original_count = len(state.items)
+        state.items = [
+            item for item in state.items 
+            if item.title and item.news_snippet and item.url
+        ]
+        removed_count = original_count - len(state.items)
+        if removed_count > 0:
+            logging.info(f"Removed {removed_count} items missing required fields")
+        return state
+    except Exception as e:
+        logging.error(f"Error filtering incomplete items: {e}")
+        raise
+
 def present_output(state: State) -> State:
     try:
         # Initialize database connection
         db = Database()
         
         try:
-            # First filter out duplicates
+            # First filter out incomplete items
+            state = filter_incomplete_items(state)
+            
+            # Then filter out duplicates
             state = filter_duplicates(state, db)
             
             # Then present the remaining items

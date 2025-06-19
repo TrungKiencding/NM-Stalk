@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from typing import List, Dict
 import logging
 from datetime import datetime
@@ -7,6 +10,7 @@ from models.models import Item, SynthesizedArticle
 from utils.ai_client import AIClient
 from utils.semantic_analyzer import SemanticAnalyzer
 from prompts import SYNTHESIZE_PROMPT
+from config import Config
 
 class SynthesisService:
     def __init__(self, llm: AIClient, analyzer: SemanticAnalyzer):
@@ -45,7 +49,8 @@ class SynthesisService:
         prompt = SYNTHESIZE_PROMPT.format(
             tag=main_tag,
             content=content,
-            relationships=relationships_text
+            relationships=relationships_text,
+            language=Config.LANGUAGE
         )
         
         article_text = await self.llm.get_completion(prompt)
