@@ -128,6 +128,38 @@ def filter_incomplete_items(state: State) -> State:
         logging.error(f"Error filtering incomplete items: {e}")
         raise
 
+def filter_trash(state: State) -> State:
+    """Remove items with tag, title, or news_snippet as 'trash', and synthesized_articles with article as 'No analysis'."""
+    try:
+        # Filter items
+        filtered_items = []
+        for item in state.items:
+            is_trash = False
+            # Check title
+            if item.title and item.title.strip().lower() == 'trash':
+                is_trash = True
+            # Check news_snippet
+            if item.news_snippet and item.news_snippet.strip().lower() == 'trash':
+                is_trash = True
+            # Check tags (content_tags)
+            if item.content_tags and any(
+                (isinstance(tag, str) and tag.strip().lower() == 'trash') for tag in item.content_tags
+            ):
+                is_trash = True
+            if not is_trash:
+                filtered_items.append(item)
+        state.items = filtered_items
+
+        # Filter synthesized_articles
+        state.synthesized_articles = [
+            article for article in state.synthesized_articles
+            if not (article.article and article.article.strip().lower() == 'no analysis')
+        ]
+        return state
+    except Exception as e:
+        logging.error(f"Error filtering trash items: {e}")
+        raise
+
 def present_output(state: State) -> State:
     try:
         # Initialize database connection
@@ -139,6 +171,9 @@ def present_output(state: State) -> State:
             
             # Then filter out duplicates
             state = filter_duplicates(state, db)
+            
+            # Then filter out trash items
+            state = filter_trash(state)
             
             # Then present the remaining items
             for item in state.items:
