@@ -45,8 +45,8 @@ class Config:
     # Facebook Settings
     FACEBOOK_EMAIL = os.getenv("FACEBOOK_EMAIL")
     FACEBOOK_PASSWORD = os.getenv("FACEBOOK_PASSWORD")
-    FACEBOOK_PAGES = ["https://www.facebook.com/cung.AI.VN"]
-    MAX_FACEBOOK_POSTS = 3
+    FACEBOOK_PAGES = ["https://www.facebook.com/cung.AI.VN", "https://www.facebook.com/groups/DeepLearnng", "https://www.facebook.com/groups/artificialintelligenceforbusines"]
+    MAX_FACEBOOK_POSTS = 5
     
     # X Settings
     X_PAGES = ["https://x.com/HyperspaceAI"]

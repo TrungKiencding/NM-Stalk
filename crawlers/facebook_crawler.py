@@ -134,7 +134,7 @@ class FacebookCrawler:
 
                                 if (
                                     post_text
-                                    and len(post_text.split()) > 105    
+                                    and len(post_text.split()) > 150    
                                     and post_text not in seen_texts      
                                     and "See more" not in post_text
                                 ):
