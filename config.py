@@ -37,10 +37,10 @@ class Config:
 
     # ArXiv Settings
     ARXIV_SUBJECT = ["cs.AI", "cs.IR", "cs.LG", "cs.MA", "cs.CV", "cs.CL"]
-    ARXIV_MAX_RESULTS = 2
+    ARXIV_MAX_RESULTS = 5
     
     # Github Settings
-    GITHUB_MAX_REPOS = 5
+    GITHUB_MAX_REPOS = 3
 
     # Facebook Settings
     FACEBOOK_EMAIL = os.getenv("FACEBOOK_EMAIL")
@@ -50,7 +50,7 @@ class Config:
     
     # X Settings
     X_PAGES = ["https://x.com/HyperspaceAI"]
-    MAX_X_POSTS = 3
+    MAX_X_POSTS = 10
     
     # Tagging Settings
     ai_tags = [

@@ -73,7 +73,7 @@ class ResearchCrawler:
                 logging.error(f"Error fetching GitHub repositories: {e}")
             # Get recent arXiv papers (last 24 hours)
             end = datetime.now(timezone.utc)
-            start = end - timedelta(days=3)
+            start = end - timedelta(days=1)
             links, abstracts, titles = self.arxiv_crawler.get_papers_by_subject_and_dates(
                 subjects=Config.ARXIV_SUBJECT, 
                 start=start,
