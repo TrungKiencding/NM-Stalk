@@ -135,16 +135,7 @@ def filter_trash(state: State) -> State:
         filtered_items = []
         for item in state.items:
             is_trash = False
-            # Check title
-            if item.title and item.title.strip().lower() == 'trash':
-                is_trash = True
-            # Check news_snippet
             if item.news_snippet and item.news_snippet.strip().lower() == 'trash':
-                is_trash = True
-            # Check tags (content_tags)
-            if item.content_tags and any(
-                (isinstance(tag, str) and tag.strip().lower() == 'trash') for tag in item.content_tags
-            ):
                 is_trash = True
             if not is_trash:
                 filtered_items.append(item)
@@ -153,7 +144,7 @@ def filter_trash(state: State) -> State:
         # Filter synthesized_articles
         state.synthesized_articles = [
             article for article in state.synthesized_articles
-            if not (article.article and article.article.strip().lower() == 'no analysis')
+            if ("no analysis" not in article.article.lower())
         ]
         return state
     except Exception as e:

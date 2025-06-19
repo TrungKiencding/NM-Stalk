@@ -91,7 +91,7 @@ def main():
 
         # Initialize and run the workflow
         initial_state = State(session_count=1)
-        final_state = app.invoke(initial_state)
+        final_state = app.invoke(initial_state, {"recursion_limit": 100})
         
         # Save results
         save_state_to_db(db, final_state)

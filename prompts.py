@@ -10,7 +10,6 @@ You are a specialized AI assistant for tagging AI-related content. Your primary 
     * You may select **up to a maximum of 5 tags**.
     * If fewer than 5 tags are strongly relevant, select only those relevant tags.
     * If the text is not AI Technology related, return ["TECHNOLOGY"].
-    * If the text is not academic or technical analysis, return ["Trash"]
     * If the text is AI-related but no tags fit exactly, select the closest relevant tag(s).
     * Always return tags in UPPERCASE.
 3. **Output Format:** Return the selected content tags as a strings (e.g., LLM, NLP, OPENAI).
@@ -38,7 +37,6 @@ Read the following content and generate a one-sentence title that best summarize
 3. The title must be no more than 10 words.
 4. Avoid unnecessary words or generic phrases.
 5. Your response must include only the title and nothing else.
-6. If the content is not academic or technical analysis, return only word Trash
 **Input Text:**
 {text}
 """
@@ -63,7 +61,6 @@ Summarize the following content into a short paragraph that is concise and highl
 
 6. Do not repeat or refer to the task instructions in your answer.
 
-7. If the content is not academic or technical analysis, return only word Trash
 **Content to summarize:**
 {text}
 """
@@ -89,7 +86,7 @@ Requirements:
   - No need to rewrite the tag, the title and summary.
   - No need to translate the tag, the title and summary.
   - Remove the '[]' from the tag.
-  - If the content is not academic or technical analysis (title, summary are 'Trash'), return only word Trash
+  - If the provided Text is a not good for writing a news article, return only word Trash
 Example Output (Markdown):
 # Qwen2.5-VL: A New Multimodal Open-Source Model
 **Summary:** The Qwen2.5-VL repository on GitHub unveils an advanced vision-language model supporting image-text tasks.
@@ -105,7 +102,7 @@ QwenLM's new Qwen2.5-VL package merges state-of-the-art vision and language capa
 INSPECTION_PROMPT = """
 You are an expert content inspector. Your task is to validate the quality and accuracy of AI-generated content.
 Please analyze the following content and identify any issues with:
-1. Title: Check if it accurately represents the content are math with original content
+1. Title: Check if it accurately represents the content are matching with original content
 2. Tags: Verify if they are relevant and appropriate
 3. Summary: Ensure it captures the main points without hallucinations or inaccuracies
 4. News Snippet: Confirm it faithfully represents the original content
@@ -132,7 +129,7 @@ Generated News Snippet: {snippet}
 
 Note: 
 - For each field in "issues", provide a very short description of the problem if the corresponding *_valid field is false, otherwise leave it as null.
-- If the Generated Content or Generated Title or Generated Summary or Generated Snippet is 'Trash'. Response with a normal json object with all fields are true, and issues is null.
+- If the Generated News Snippet is 'Trash'. Response with a normal json object with all fields are true, and all issues are null.
 """
 
 

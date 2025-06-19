@@ -37,7 +37,7 @@ class Config:
 
     # ArXiv Settings
     ARXIV_SUBJECT = ["cs.AI", "cs.IR", "cs.LG", "cs.MA", "cs.CV", "cs.CL"]
-    ARXIV_MAX_RESULTS = 5
+    ARXIV_MAX_RESULTS = 3
     
     # Github Settings
     GITHUB_MAX_REPOS = 3
@@ -50,7 +50,7 @@ class Config:
     
     # X Settings
     X_PAGES = ["https://x.com/HyperspaceAI"]
-    MAX_X_POSTS = 10
+    MAX_X_POSTS = 5
     
     # Tagging Settings
     ai_tags = [
