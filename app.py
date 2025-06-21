@@ -75,6 +75,8 @@ def get_source_from_url(url):
         return 'github'
     elif 'arxiv.org' in url_lower:
         return 'arxiv'
+    elif 'x.com' in url_lower:
+        return 'x'
     return 'other'
 
 def get_news_data(selected_date=None):

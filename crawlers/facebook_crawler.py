@@ -87,13 +87,15 @@ class FacebookCrawler:
                             page.get_by_test_id("royal-pass").fill(password)
                             time.sleep(3)
                             page.get_by_test_id("royal-pass").press("Enter")
-                            time.sleep(3)
                             page.wait_for_load_state("networkidle")
+                            time.sleep(5)  # Wait for login to complete
+                            # Save login state
                             FacebookCrawler.save_login_state(context)
                             logging.info("Successfully logged in to Facebook")
-                            # Handle any additional login prompts
                         except Exception as e:
                             logging.error(f"Facebook login failed: {e}")
+                            logging.info("Successfully logged in to Facebook without credentials")
+                            pass
                     except Exception as e:
                         logging.error(f"Facebook login failed: {e}")
                         return [], [], []
@@ -132,7 +134,7 @@ class FacebookCrawler:
 
                                 if (
                                     post_text
-                                    and len(post_text.split()) > 105    
+                                    and len(post_text.split()) > 150    
                                     and post_text not in seen_texts      
                                     and "See more" not in post_text
                                 ):
@@ -166,7 +168,6 @@ class FacebookCrawler:
 
                 browser.close()
                 
-            logging.info(f"✅ Done: Scraped {len(all_posts)} unique posts.")
             return posts, links, titles
             
         except Exception as e:

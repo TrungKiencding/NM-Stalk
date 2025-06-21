@@ -49,3 +49,5 @@ ENV/
 Thumbs.db
 
 facebook_state/
+
+test.py

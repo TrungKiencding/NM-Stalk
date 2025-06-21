@@ -14,7 +14,8 @@ def get_source_priority(source: str) -> int:
     priorities = {
         "GitHub": 0,
         "arXiv": 1,
-        "Facebook": 2
+        "Facebook": 2,
+        "X": 3
     }
     return priorities.get(source, 999)  # Unknown sources get lowest priority
 
@@ -39,7 +40,7 @@ def find_similar_articles(items: List[Dict], threshold: float = 0.85) -> List[Tu
                 
     return similar_pairs
 
-def check_db_duplicates(state: State, db: Database, threshold: float = 0.5) -> Set[int]:
+def check_db_duplicates(state: State, db: Database, threshold: float = 0.7) -> Set[int]:
     """Check for duplicates between current items and database items"""
     try:
         # Get recent items from database
@@ -111,14 +112,59 @@ def filter_duplicates(state: State, db: Database) -> State:
         logging.error(f"Error filtering duplicates: {e}")
         raise
 
+def filter_incomplete_items(state: State) -> State:
+    """Filter out items that are missing required fields (title, news_snippet, or URL)"""
+    try:
+        original_count = len(state.items)
+        state.items = [
+            item for item in state.items 
+            if item.title and item.news_snippet and item.url
+        ]
+        removed_count = original_count - len(state.items)
+        if removed_count > 0:
+            logging.info(f"Removed {removed_count} items missing required fields")
+        return state
+    except Exception as e:
+        logging.error(f"Error filtering incomplete items: {e}")
+        raise
+
+def filter_trash(state: State) -> State:
+    """Remove items with tag, title, or news_snippet as 'trash', and synthesized_articles with article as 'No analysis'."""
+    try:
+        # Filter items
+        filtered_items = []
+        for item in state.items:
+            is_trash = False
+            if item.news_snippet and item.news_snippet.strip().lower() == 'trash':
+                is_trash = True
+            if not is_trash:
+                filtered_items.append(item)
+        state.items = filtered_items
+
+        # Filter synthesized_articles
+        state.synthesized_articles = [
+            article for article in state.synthesized_articles
+            if ("no analysis" not in article.article.lower())
+        ]
+        return state
+    except Exception as e:
+        logging.error(f"Error filtering trash items: {e}")
+        raise
+
 def present_output(state: State) -> State:
     try:
         # Initialize database connection
         db = Database()
         
         try:
-            # First filter out duplicates
+            # First filter out incomplete items
+            state = filter_incomplete_items(state)
+            
+            # Then filter out duplicates
             state = filter_duplicates(state, db)
+            
+            # Then filter out trash items
+            state = filter_trash(state)
             
             # Then present the remaining items
             for item in state.items:

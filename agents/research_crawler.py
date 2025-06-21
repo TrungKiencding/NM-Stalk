@@ -13,6 +13,7 @@ from tools.content_extractor import ContentExtractor
 from crawlers.github_crawler import GitHubCrawler
 from crawlers.arxiv_crawler import ArXivCrawler
 from crawlers.facebook_crawler import FacebookCrawler
+from crawlers.X_crawler import XCrawler
 from config import Config
 
 class ResearchCrawler:
@@ -22,7 +23,7 @@ class ResearchCrawler:
         self.github_crawler = GitHubCrawler()
         self.arxiv_crawler = ArXivCrawler()
         self.facebook_crawler = FacebookCrawler()
-
+        self.x_crawler = XCrawler()
     def enrich_content(self, content: str, max_related: int = 3) -> List[Dict[str, str]]:
         """
         Find related content using Google search.
@@ -47,32 +48,34 @@ class ResearchCrawler:
         """Main crawling function that combines GitHub, arXiv, and Facebook data with enrichment."""
         try:
             # Get trending GitHub repositories
-            repos = self.github_crawler.fetch_trending_repos(max_repos=Config.GITHUB_MAX_REPOS)
-            github_items = []
-            
-            for repo in repos:
-                data = self.github_crawler.grab_readme(repo)
-                if data["content"]:
-                    # Get related content
-                    #related_content = self.enrich_content(data["content"][:500])  # Use first 500 chars for search
-                    related_content = []
-                    item = Item(
-                        id=str(uuid.uuid4()),
-                        url=f"https://github.com/{repo}",
-                        title=repo,
-                        content_snippet=data["content"],
-                        publication_date=datetime.now(timezone.utc),
-                        source="GitHub",
-                        timestamp=datetime.now(timezone.utc),
-                        related_content=related_content
-                    )
-                    github_items.append(item)
-
+            try:
+                repos = self.github_crawler.fetch_trending_repos(max_repos=Config.GITHUB_MAX_REPOS)
+                github_items = []
+                
+                for repo in repos:
+                    data = self.github_crawler.grab_readme(repo)
+                    if data["content"]:
+                        # Get related content
+                        #related_content = self.enrich_content(data["content"][:500])  # Use first 500 chars for search
+                        related_content = []
+                        item = Item(
+                            id=str(uuid.uuid4()),
+                            url=f"https://github.com/{repo}",
+                            title=repo,
+                            content_snippet=data["content"],
+                            publication_date=datetime.now(timezone.utc),
+                            source="GitHub",
+                            timestamp=datetime.now(timezone.utc),
+                            related_content=related_content
+                        )
+                        github_items.append(item)
+            except Exception as e:
+                logging.error(f"Error fetching GitHub repositories: {e}")
             # Get recent arXiv papers (last 24 hours)
             end = datetime.now(timezone.utc)
-            start = end - timedelta(days=2)
+            start = end - timedelta(days=1)
             links, abstracts, titles = self.arxiv_crawler.get_papers_by_subject_and_dates(
-                subject=Config.ARXIV_SUBJECT, 
+                subjects=Config.ARXIV_SUBJECT, 
                 start=start,
                 end=end,
                 max_results=Config.ARXIV_MAX_RESULTS
@@ -95,7 +98,6 @@ class ResearchCrawler:
                     related_content=related_content
                 )
                 arxiv_items.append(item)
-
             # Get Facebook posts
             facebook_items = []
             if hasattr(Config, 'FACEBOOK_PAGES') and Config.FACEBOOK_PAGES:
@@ -126,12 +128,35 @@ class ResearchCrawler:
                             facebook_items.append(item)
                     except Exception as e:
                         logging.error(f"Error crawling Facebook page {page_url}: {e}")
+            # Get X posts
+            x_items = []
+            if hasattr(Config, 'X_PAGES') and Config.X_PAGES:
+                for page_url in Config.X_PAGES:
+                    posts, links, _ = self.x_crawler.get_posts_from_page(
+                        page_url=page_url,
+                        max_posts=Config.MAX_X_POSTS)
+                    for post, link in zip(posts, links):
+                        # Get related content
+                        #related_content = self.enrich_content(post[:500])  # Use first 500 chars for search
+                        related_content = []
+                        
+                        item = Item(
+                            id=str(uuid.uuid4()),
+                            url=link,
+                            title=None,  
+                            content_snippet=post,
+                            publication_date=datetime.now(timezone.utc),
+                            source="X",
+                            timestamp=datetime.now(timezone.utc),
+                            related_content=related_content
+                        )
+                        x_items.append(item)
 
             # Combine all items
             state.items.extend(facebook_items)
             state.items.extend(github_items)
             state.items.extend(arxiv_items)
-            
+            state.items.extend(x_items)
             '''
             for item in state.items:
                 print(item.title)
@@ -141,7 +166,7 @@ class ResearchCrawler:
                 print("-"*100)  
             '''
        
-            logging.info(f"Crawled {len(github_items)} GitHub repos, {len(arxiv_items)} arXiv papers, and {len(facebook_items)} Facebook posts")
+            logging.info(f"Crawled {len(github_items)} GitHub repos, {len(arxiv_items)} arXiv papers, {len(facebook_items)} Facebook posts, and {len(x_items)} X posts")
             return state
         except Exception as e:
             logging.error(f"Crawl data failed: {e}")

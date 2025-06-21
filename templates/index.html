@@ -34,6 +34,22 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: transform 0.2s ease;
             position: relative;
+            border: 3px solid #e1e8f0; /* Default border */
+        }
+        .news-item.border-facebook {
+            border-color: #1877f2;
+        }
+        .news-item.border-github {
+            border-color: #24292e;
+        }
+        .news-item.border-arxiv {
+            border-color: #b31b1b;
+        }
+        .news-item.border-x {
+            border-color: #000000;
+        }
+        .news-item.border-other {
+            border-color: #6c757d;
         }
         .news-item:hover {
             transform: translateY(-2px);
@@ -100,6 +116,10 @@
             background-color: #6c757d;
             color: white;
         }
+        .source-x {
+            background-color: #000000;
+            color: white;
+        }
         .filter-container {
             background: white;
             padding: 1rem;
@@ -150,16 +170,39 @@
         .filter-btn.active[data-source="all"] {
             background-color: #495057;
         }
+        .filter-btn[data-source="x"] {
+            background-color: #000000;
+        }
+        .filter-btn.active[data-source="x"] {
+            background-color: #1a1a1a;
+        }
         .synthesized-section {
             margin-top: 3rem;
             padding-top: 2rem;
             border-top: 2px solid #e1e8f0;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         .synthesized-section h2 {
             color: #2c3e50;
             font-size: 1.8rem;
             margin-bottom: 1.5rem;
             text-align: center;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+        .synthesized-section h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, #3498db, #2c3e50);
+            border-radius: 3px;
         }
         .synthesized-article {
             background: white;
@@ -191,12 +234,45 @@
             line-height: 1.8;
             color: #34495e;
         }
+        .synthesized-toggle {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .synthesized-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .synthesized-toggle i {
+            transition: transform 0.3s ease;
+        }
+        .synthesized-toggle.collapsed i {
+            transform: rotate(-180deg);
+        }
+        .synthesized-section.collapsed {
+            display: none;
+        }
+        .filter-btn[data-source="synthesized"] {
+            background-color: #27ae60;
+        }
+        .filter-btn.active[data-source="synthesized"] {
+            background-color: #219a52;
+        }
     </style>
 </head>
 <body>
     <div class="page-header">
         <div class="container">
-            <h1 class="mb-0">AI Technologies News</h1>
+            <h1 class="mb-0">NetMind Stalk - Your Daily News</h1>
         </div>
     </div>
     <div class="container">
@@ -208,12 +284,14 @@
             <button class="filter-btn" data-source="facebook">Facebook</button>
             <button class="filter-btn" data-source="github">GitHub</button>
             <button class="filter-btn" data-source="arxiv">arXiv</button>
+            <button class="filter-btn" data-source="x">X (Twitter)</button>
+            <button class="filter-btn" data-source="synthesized">Synthesized Analysis</button>
         </div>
         <div id="newsContainer">
             {% for item in news_items %}
-            <div class="news-item" data-source="{{ item.source }}">
+            <div class="news-item border-{{ item.source }}" data-source="{{ item.source }}">
                 <div class="source-tag source-{{ item.source }}">{{ item.source }}</div>
-                <p class="timestamp">{{ item.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                <p class="timestamp">{{ item.timestamp.strftime('%Y-%m-%d') }}</p>
                 <div class="content">{{ item.news_snippet | safe }}</div>
                 <div class="article-footer">
                     <a href="{{ item.url }}" target="_blank" class="article-url">View Original Article</a>
@@ -228,8 +306,7 @@
             <div id="synthesizedContainer">
                 {% for article in synthesized_articles %}
                 <div class="synthesized-article">
-                    <div class="tag">#{{ article.tag }}</div>
-                    <div class="date">{{ article.date.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                    <div class="date">{{ article.date.strftime('%Y-%m-%d') }}</div>
                     <div class="content">{{ article.article | safe }}</div>
                 </div>
                 {% endfor %}
@@ -238,6 +315,7 @@
         {% endif %}
     </div>
 
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script>
     <script>
         let currentSource = 'all';
         
@@ -256,6 +334,15 @@
                     item.style.display = 'none';
                 }
             });
+
+            const synthesizedSection = document.querySelector('.synthesized-section');
+            if (synthesizedSection) {
+                if (currentSource === 'all' || currentSource === 'synthesized') {
+                    synthesizedSection.style.display = 'block';
+                } else {
+                    synthesizedSection.style.display = 'none';
+                }
+            }
         }
 
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -272,10 +359,9 @@
                     if (data.status === 'success') {
                         const container = document.getElementById('newsContainer');
                         container.innerHTML = data.data.map(item => `
-                            <div class="news-item" data-source="${item.source}">
+                            <div class="news-item border-${item.source}" data-source="${item.source}">
                                 <div class="source-tag source-${item.source}">${item.source}</div>
-                                <h2>${item.title}</h2>
-                                <p class="timestamp">${item.timestamp}</p>
+                                <p class="timestamp">${item.timestamp ? item.timestamp.slice(0,10) : ''}</p>
                                 <div class="content">${item.news_snippet}</div>
                                 <div class="article-footer">
                                     <a href="${item.url}" target="_blank" class="article-url">View Original Article</a>
@@ -296,7 +382,6 @@
                             }
                             document.getElementById('synthesizedContainer').innerHTML = data.synthesized_articles.map(article => `
                                 <div class="synthesized-article">
-                                    <div class="tag">#${article.tag}</div>
                                     <div class="date">${article.date}</div>
                                     <div class="content">${article.article}</div>
                                 </div>

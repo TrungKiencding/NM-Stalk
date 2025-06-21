@@ -36,17 +36,21 @@ class Config:
     NOVELTY_DAYS = 7
 
     # ArXiv Settings
-    ARXIV_SUBJECT = "cs.AI"
-    ARXIV_MAX_RESULTS = 5
+    ARXIV_SUBJECT = ["cs.AI", "cs.IR", "cs.LG", "cs.MA", "cs.CV", "cs.CL"]
+    ARXIV_MAX_RESULTS = 3
     
     # Github Settings
-    GITHUB_MAX_REPOS = 5
+    GITHUB_MAX_REPOS = 3
 
     # Facebook Settings
     FACEBOOK_EMAIL = os.getenv("FACEBOOK_EMAIL")
     FACEBOOK_PASSWORD = os.getenv("FACEBOOK_PASSWORD")
-    FACEBOOK_PAGES = os.getenv("FACEBOOK_PAGES", "").split(",") if os.getenv("FACEBOOK_PAGES") else []
+    FACEBOOK_PAGES = ["https://www.facebook.com/cung.AI.VN", "https://www.facebook.com/groups/DeepLearnng", "https://www.facebook.com/groups/artificialintelligenceforbusines"]
     MAX_FACEBOOK_POSTS = 5
+    
+    # X Settings
+    X_PAGES = ["https://x.com/HyperspaceAI"]
+    MAX_X_POSTS = 5
     
     # Tagging Settings
     ai_tags = [
