@@ -36,17 +36,14 @@
             position: relative;
             border: 3px solid #e1e8f0; /* Default border */
         }
-        .news-item.border-facebook {
-            border-color: #1877f2;
-        }
         .news-item.border-github {
             border-color: #24292e;
         }
         .news-item.border-arxiv {
             border-color: #b31b1b;
         }
-        .news-item.border-x {
-            border-color: #000000;
+        .news-item.border-hottopic {
+            border-color: #f39c12;
         }
         .news-item.border-other {
             border-color: #6c757d;
@@ -100,10 +97,6 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .source-facebook {
-            background-color: #1877f2;
-            color: white;
-        }
         .source-github {
             background-color: #24292e;
             color: white;
@@ -112,12 +105,12 @@
             background-color: #b31b1b;
             color: white;
         }
-        .source-other {
-            background-color: #6c757d;
+        .source-hottopic {
+            background-color: #f39c12;
             color: white;
         }
-        .source-x {
-            background-color: #000000;
+        .source-other {
+            background-color: #6c757d;
             color: white;
         }
         .filter-container {
@@ -146,20 +139,17 @@
         .filter-btn:hover {
             transform: scale(1.05);
         }
-        .filter-btn[data-source="facebook"] {
-            background-color: #1877f2;
-        }
         .filter-btn[data-source="github"] {
             background-color: #24292e;
         }
         .filter-btn[data-source="arxiv"] {
             background-color: #b31b1b;
         }
+        .filter-btn[data-source="Hot topic"] {
+            background-color: #f39c12;
+        }
         .filter-btn[data-source="all"] {
             background-color: #6c757d;
-        }
-        .filter-btn.active[data-source="facebook"] {
-            background-color: #0d6efd;
         }
         .filter-btn.active[data-source="github"] {
             background-color: #1a1e21;
@@ -167,112 +157,35 @@
         .filter-btn.active[data-source="arxiv"] {
             background-color: #8b1515;
         }
+        .filter-btn.active[data-source="Hot topic"] {
+            background-color: #f39c12;
+        }
         .filter-btn.active[data-source="all"] {
             background-color: #495057;
         }
-        .filter-btn[data-source="x"] {
-            background-color: #000000;
-        }
-        .filter-btn.active[data-source="x"] {
-            background-color: #1a1a1a;
-        }
-        .synthesized-section {
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 2px solid #e1e8f0;
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .synthesized-section h2 {
-            color: #2c3e50;
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            position: relative;
-            padding-bottom: 1rem;
-        }
-        .synthesized-section h2:after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 3px;
-            background: linear-gradient(90deg, #3498db, #2c3e50);
-            border-radius: 3px;
-        }
-        .synthesized-article {
-            background: white;
-            margin-bottom: 2rem;
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease;
-        }
-        .synthesized-article:hover {
-            transform: translateY(-2px);
-        }
-        .synthesized-article .tag {
+        .content-type-tag {
             display: inline-block;
-            padding: 0.4rem 1rem;
-            background-color: #3498db;
-            color: white;
-            border-radius: 2rem;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-        .synthesized-article .date {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-        .synthesized-article .content {
-            line-height: 1.8;
-            color: #34495e;
-        }
-        .synthesized-toggle {
-            background: linear-gradient(135deg, #3498db, #2c3e50);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 1rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .synthesized-toggle:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        .synthesized-toggle i {
-            transition: transform 0.3s ease;
-        }
-        .synthesized-toggle.collapsed i {
-            transform: rotate(-180deg);
-        }
-        .synthesized-section.collapsed {
-            display: none;
-        }
-        .filter-btn[data-source="synthesized"] {
+            padding: 0.3rem 0.6rem;
             background-color: #27ae60;
+            color: white;
+            border-radius: 1rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
         }
-        .filter-btn.active[data-source="synthesized"] {
-            background-color: #219a52;
+        .content-type-article {
+            background-color: #3498db;
+        }
+        .content-type-report {
+            background-color: #f39c12;
         }
     </style>
 </head>
 <body>
     <div class="page-header">
         <div class="container">
-            <h1 class="mb-0">NetMind Stalk - Your Daily News</h1>
+            <h1 class="mb-0">My Trender</h1>
         </div>
     </div>
     <div class="container">
@@ -281,38 +194,65 @@
         </div>
         <div class="filter-container">
             <button class="filter-btn active" data-source="all">All Sources</button>
-            <button class="filter-btn" data-source="facebook">Facebook</button>
             <button class="filter-btn" data-source="github">GitHub</button>
             <button class="filter-btn" data-source="arxiv">arXiv</button>
-            <button class="filter-btn" data-source="x">X (Twitter)</button>
-            <button class="filter-btn" data-source="synthesized">Synthesized Analysis</button>
+            <button class="filter-btn" data-source="Hot topic">Hot topic</button>
         </div>
+        
+        <!-- Content Summary -->
+        <div class="content-summary" style="background: white; padding: 1rem; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1rem;">
+            <h4>Content Summary</h4>
+            <p>Showing {{ news_items|length }} total items</p>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <span class="badge bg-dark">GitHub: {{ news_items|selectattr('source', 'equalto', 'github')|list|length }}</span>
+                <span class="badge bg-danger">arXiv: {{ news_items|selectattr('source', 'equalto', 'arxiv')|list|length }}</span>
+                <span class="badge bg-secondary">Other: {{ news_items|selectattr('source', 'equalto', 'other')|list|length }}</span>
+            </div>
+        </div>
+        
         <div id="newsContainer">
             {% for item in news_items %}
             <div class="news-item border-{{ item.source }}" data-source="{{ item.source }}">
-                <div class="source-tag source-{{ item.source }}">{{ item.source }}</div>
-                <p class="timestamp">{{ item.timestamp.strftime('%Y-%m-%d') }}</p>
-                <div class="content">{{ item.news_snippet | safe }}</div>
+                <div class="source-tag source-{{ item.source }}">
+                    {{ item.source }}
+                </div>
+                <p class="timestamp">
+                    {% if item.timestamp %}
+                        {{ item.timestamp.strftime('%Y-%m-%d %H:%M') if item.timestamp is string else item.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                    {% endif %}
+                </p>
+                <div class="content">
+                    {% if item.news_snippet %}
+                        {{ item.news_snippet | safe }}
+                    {% endif %}
+                </div>
+                {% if item.content_tags %}
+                <div class="tags" style="margin-top: 1rem;">
+                    {% for tag in item.content_tags %}
+                    <span class="badge bg-info me-1">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% if item.url %}
                 <div class="article-footer">
                     <a href="{{ item.url }}" target="_blank" class="article-url">View Original Article</a>
                 </div>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
-
-        {% if synthesized_articles %}
-        <div class="synthesized-section">
-            <h2>Synthesized Analysis</h2>
-            <div id="synthesizedContainer">
-                {% for article in synthesized_articles %}
-                <div class="synthesized-article">
-                    <div class="date">{{ article.date.strftime('%Y-%m-%d') }}</div>
-                    <div class="content">{{ article.article | safe }}</div>
-                </div>
-                {% endfor %}
+        <div id="reportsContainer">
+            {% for report in reports %}
+            <div class="report-item">
+                <h2>{{ report.article | safe }}</h2>
+                <p class="timestamp">
+                    {% if report.date %}
+                        {{ report.date.strftime('%Y-%m-%d %H:%M') if report.date is string else report.date.strftime('%Y-%m-%d %H:%M') }}
+                    {% endif %}
+                </p>
             </div>
+            {% endfor %}
         </div>
-        {% endif %}
     </div>
 
     <script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script>
@@ -334,15 +274,6 @@
                     item.style.display = 'none';
                 }
             });
-
-            const synthesizedSection = document.querySelector('.synthesized-section');
-            if (synthesizedSection) {
-                if (currentSource === 'all' || currentSource === 'synthesized') {
-                    synthesizedSection.style.display = 'block';
-                } else {
-                    synthesizedSection.style.display = 'none';
-                }
-            }
         }
 
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -358,37 +289,48 @@
                 .then(data => {
                     if (data.status === 'success') {
                         const container = document.getElementById('newsContainer');
-                        container.innerHTML = data.data.map(item => `
-                            <div class="news-item border-${item.source}" data-source="${item.source}">
-                                <div class="source-tag source-${item.source}">${item.source}</div>
-                                <p class="timestamp">${item.timestamp ? item.timestamp.slice(0,10) : ''}</p>
-                                <div class="content">${item.news_snippet}</div>
+                        container.innerHTML = data.data.map(item => {
+                            const timestamp = item.timestamp;
+                            const content = item.news_snippet || '';
+                            const tags = item.content_tags && item.content_tags.length > 0 ? 
+                                `<div class="tags" style="margin-top: 1rem;">
+                                    ${item.content_tags.map(tag => `<span class="badge bg-info me-1">${tag}</span>`).join('')}
+                                </div>` : '';
+                            const url = item.url ? `
                                 <div class="article-footer">
                                     <a href="${item.url}" target="_blank" class="article-url">View Original Article</a>
                                 </div>
-                            </div>
-                        `).join('');
-
-                        const synthesizedContainer = document.getElementById('synthesizedContainer');
-                        if (data.synthesized_articles && data.synthesized_articles.length > 0) {
-                            if (!synthesizedContainer) {
-                                const section = document.createElement('div');
-                                section.className = 'synthesized-section';
-                                section.innerHTML = `
-                                    <h2>Synthesized Analysis</h2>
-                                    <div id="synthesizedContainer"></div>
-                                `;
-                                container.parentNode.appendChild(section);
-                            }
-                            document.getElementById('synthesizedContainer').innerHTML = data.synthesized_articles.map(article => `
-                                <div class="synthesized-article">
-                                    <div class="date">${article.date}</div>
-                                    <div class="content">${article.article}</div>
+                            ` : '';
+                            
+                            return `
+                                <div class="news-item border-${item.source}" data-source="${item.source}">
+                                    <div class="source-tag source-${item.source}">${item.source}</div>
+                                    <p class="timestamp">${timestamp ? timestamp.slice(0,16) : ''}</p>
+                                    <div class="content">${content}</div>
+                                    ${tags}
+                                    ${url}
                                 </div>
-                            `).join('');
-                        } else if (synthesizedContainer) {
-                            synthesizedContainer.parentNode.remove();
+                            `;
+                        }).join('');
+                        
+                        // Update content summary
+                        const contentSummary = document.querySelector('.content-summary');
+                        if (contentSummary) {
+                            const githubCount = data.data.filter(item => item.source === 'github').length;
+                            const arxivCount = data.data.filter(item => item.source === 'arxiv').length;
+                            const otherCount = data.data.filter(item => item.source === 'Hot topic').length;
+                            
+                            contentSummary.innerHTML = `
+                                <h4>Content Summary</h4>
+                                <p>Showing ${data.data.length} total items</p>
+                                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                    <span class="badge bg-dark">GitHub: ${githubCount}</span>
+                                    <span class="badge bg-danger">arXiv: ${arxivCount}</span>
+                                    <span class="badge bg-secondary">Other: ${otherCount}</span>
+                                </div>
+                            `;
                         }
+                        
                         updateFilters();
                     }
                 });
@@ -396,4 +338,5 @@
     </script>
 </body>
 </html>
+    
     

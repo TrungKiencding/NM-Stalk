@@ -7,6 +7,7 @@ from prompts import SUMMARY_PROMPT, NEWS_SNIPPET_PROMPT
 import logging
 import asyncio
 from config import Config
+from utils.qwen import get_qwen_output
 
 def summarize_and_write(state: State, llm: AIClient) -> State:
     try:
@@ -19,6 +20,11 @@ def summarize_and_write(state: State, llm: AIClient) -> State:
                 messages = NEWS_SNIPPET_PROMPT.format(text=item.cleaned_text, summary=item.summary, title=item.title, url=item.url, language=Config.LANGUAGE, tag=item.content_tags)
                 snippet_response = asyncio.run(llm.get_completion(messages))
                 item.news_snippet = snippet_response
+        for post in state.posts:
+            if post.title is None:
+                messages = post.cleaned_text
+                summary_response = get_qwen_output(messages)
+                post.title = summary_response
         logging.info("Summarization and news writing completed")
         return state
     except Exception as e:

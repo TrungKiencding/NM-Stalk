@@ -3,9 +3,8 @@ from openai import AsyncAzureOpenAI
 from config import Config
 import logging
 from typing import List, Union
-import json
-import base64
 import numpy as np
+import requests
 
 class AIClient:
     def __init__(self):
@@ -21,57 +20,20 @@ class AIClient:
                 azure_endpoint=self.config.AZURE_OPENAI_ENDPOINT,
                 api_key=self.config.AZURE_OPENAI_API_KEY,
                 api_version=self.config.AZURE_OPENAI_API_VERSION,
-                http_client=httpx.AsyncClient(verify=False)
+                http_client=httpx.AsyncClient()
             )
         except Exception as e:
             logging.error(f"Failed to initialize Azure OpenAI client: {e}")
             raise
 
-    def _base64_to_float_array(self, base64_str: str) -> List[float]:
-        """Convert base64 string to float array"""
-        decoded_bytes = base64.b64decode(base64_str)
-        return list(np.frombuffer(decoded_bytes, dtype=np.float32))
-
-    async def get_embedding(self, text: Union[str, List[str]], model: str = "voyage-3-large") -> List[float]:
-        """
-        Get embedding using Voyage AI
-        :param text: Text to embed (string or list of strings)
-        :param model: Voyage model to use (default: voyage-large-3)
-        :return: List of embeddings
-        """
+    @staticmethod
+    def get_embedding_model():
+        """Get Voyage embedding model for BERTopic"""
         try:
-            # Prepare the input
-            if isinstance(text, str):
-                input_texts = [text]
-            else:
-                input_texts = text
-
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    f"{self.voyage_base_url}/embeddings",
-                    headers={
-                        "Content-Type": "application/json",
-                        "Authorization": f"Bearer {self.voyage_api_key}"
-                    },
-                    json={
-                        "model": model,
-                        "input": input_texts,
-                        "encoding_format": "base64"
-                    }
-                )
-                
-                if response.status_code != 200:
-                    raise Exception(f"Voyage API error: {response.text}")
-                
-                result = response.json()
-                # Convert base64 embeddings to float arrays
-                embeddings = [self._base64_to_float_array(data["embedding"]) for data in result["data"]]
-                
-                # Return single embedding for single input, list for multiple
-                return embeddings[0] if isinstance(text, str) else embeddings
-                
+            # Return a VoyageEmbeddingModel class that implements the required interface
+            return VoyageEmbeddingModel()
         except Exception as e:
-            logging.error(f"Error getting Voyage embedding: {e}")
+            logging.error(f"Failed to load Voyage embedding model: {e}")
             raise
 
     async def get_completion(self, prompt: str, model: str = None) -> str:
@@ -91,3 +53,124 @@ class AIClient:
         except Exception as e:
             logging.error(f"Error getting completion: {e}")
             raise
+
+    async def get_embedding(self, texts: List[str], model: str = "voyage-3-large") -> List[List[float]]:
+        """
+        Get embeddings from Voyage AI
+        :param texts: List of texts to embed
+        :param model: Voyage model name
+        :return: List of embedding vectors
+        """
+        try:
+            headers = {
+                "Authorization": f"Bearer {self.voyage_api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            data = {
+                "input": texts,
+                "model": model
+            }
+            
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    f"{self.voyage_base_url}/embeddings",
+                    headers=headers,
+                    json=data,
+                    timeout=30.0
+                )
+                response.raise_for_status()
+                result = response.json()
+                return [embedding["embedding"] for embedding in result["data"]]
+                
+        except Exception as e:
+            logging.error(f"Error getting embeddings from Voyage AI: {e}")
+            raise
+
+    def get_embedding_sync(self, texts: List[str], model: str = "voyage-3-large") -> List[List[float]]:
+        """
+        Get embeddings from Voyage AI synchronously
+        :param texts: List of texts to embed
+        :param model: Voyage model name
+        :return: List of embedding vectors
+        """
+        try:
+            headers = {
+                "Authorization": f"Bearer {self.voyage_api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            data = {
+                "input": texts,
+                "model": model
+            }
+            
+            response = requests.post(
+                f"{self.voyage_base_url}/embeddings",
+                headers=headers,
+                json=data,
+                timeout=30.0
+            )
+            response.raise_for_status()
+            result = response.json()
+            return [embedding["embedding"] for embedding in result["data"]]
+                
+        except Exception as e:
+            logging.error(f"Error getting embeddings from Voyage AI: {e}")
+            raise
+
+
+class VoyageEmbeddingModel:
+    """Wrapper class to make Voyage embeddings compatible with BERTopic"""
+    
+    def __init__(self):
+        # Avoid circular import by accessing config directly
+        self.voyage_api_key = Config.VOYAGE_API_KEY
+        self.voyage_base_url = "https://api.voyageai.com/v1"
+        self.model_name = "voyage-3-large"
+    
+    def encode(self, texts: Union[str, List[str]], **kwargs) -> np.ndarray:
+        """
+        Encode texts to embeddings using Voyage AI
+        This method is called by BERTopic and needs to be synchronous
+        """
+        try:
+            # Convert to list if single string
+            if isinstance(texts, str):
+                texts = [texts]
+            
+            # Always use synchronous approach for BERTopic compatibility
+            return self._encode_sync(texts)
+                
+        except Exception as e:
+            logging.error(f"Error in Voyage embedding encode: {e}")
+            raise
+
+    def _encode_sync(self, texts: List[str]) -> np.ndarray:
+        """Synchronous encoding using requests"""
+        try:
+            headers = {
+                "Authorization": f"Bearer {self.voyage_api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            data = {
+                "input": texts,
+                "model": self.model_name
+            }
+            
+            response = requests.post(
+                f"{self.voyage_base_url}/embeddings",
+                headers=headers,
+                json=data,
+                timeout=30.0
+            )
+            response.raise_for_status()
+            result = response.json()
+            embeddings = [embedding["embedding"] for embedding in result["data"]]
+            
+            return np.array(embeddings)
+            
+        except Exception as e:
+            logging.error(f"Error in synchronous Voyage embedding: {e}")
+            raise 

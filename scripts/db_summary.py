@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from models.database import Database
-from models.models import DBItem, DBArticle
+from models.models import DBItem, DBPost, DBHotTopic
 import logging
 from datetime import datetime
 
@@ -11,9 +11,10 @@ def print_database_summary():
     try:
         db = Database()
         items = db.session.query(DBItem).order_by(DBItem.timestamp.desc()).all()
-        articles = db.session.query(DBArticle).order_by(DBArticle.date.desc()).all()
+        posts = db.session.query(DBPost).order_by(DBPost.publication_date.desc()).all()
+        hot_topics = db.session.query(DBHotTopic).order_by(DBHotTopic.publication_date.desc()).all()
         
-        if not items and not articles:
+        if not items and not hot_topics:
             print("\nDatabase is empty.")
             return
             
@@ -24,7 +25,8 @@ def print_database_summary():
         
         # Print total counts
         print(f"\nTotal Items: {len(items)}")
-        print(f"Total Synthesized Articles: {len(articles)}")
+        print(f"Total Posts: {len(posts)}")
+        print(f"Total Hot Topics: {len(hot_topics)}")
         
         # Print Items
         if items:
@@ -34,44 +36,51 @@ def print_database_summary():
             
         for idx, item in enumerate(items, 1):
             print(f"Item #{idx}")
-                print(f"ID: {item.id}")
+            print(f"ID: {item.id}")
             print(f"Title: {item.title}")
-                print(f"Source: {item.source}")
+            print(f"Source: {item.source}")
             print(f"URL: {item.url}")
-                print(f"Publication Date: {item.publication_date}")
-                print(f"Last Updated: {item.timestamp}")
+            print(f"Publication Date: {item.publication_date}")
+            print(f"Last Updated: {item.timestamp}")
                 
-                if item.content_tags:
-                    print("Tags:", ", ".join(item.content_tags))
+            if item.content_tags:
+                print("Tags:", ", ".join(item.content_tags))
                 
             if item.news_snippet:
-                    print("\nNews Snippet:")
-                    print("-" * 80)
-                    print(item.news_snippet)
-                    print("-" * 80)
+                print("\nNews Snippet:")
+                print("-" * 80)
+                print(item.news_snippet)
+                print("-" * 80)
+            elif item.content_snippet:
+                print("\nContent Snippet:")
+                print("-" * 80)
+                print(item.content_snippet)
+                print("-" * 80)
                 
-                if item.related_content:
-                    print("\nRelated Content:")
-                    for content in item.related_content:
-                        print(f"- {content.get('link', 'No link available')}")
+            if item.summary:
+                print("\nSummary:")
+                print("-" * 80)
+                print(item.summary)
+                print("-" * 80)
                 
-                print("\n" + "-"*100 + "\n")
-        
-        # Print Synthesized Articles
-        if articles:
+            print("\n" + "-"*100 + "\n")
+        # Print Hot Topics
+        if hot_topics:
             print("\n" + "="*100)
-            print("SYNTHESIZED ARTICLES".center(100))
+            print("HOT TOPICS".center(100))
             print("="*100 + "\n")
             
-            for idx, article in enumerate(articles, 1):
-                print(f"Article #{idx}")
-                print(f"ID: {article.id}")
-                print(f"Tag: {article.tag}")
-                print(f"Date: {article.date}")
-                print("\nContent:")
-                print("-" * 80)
-                print(article.article)
-                print("-" * 80)
+            for idx, topic in enumerate(hot_topics, 1):
+                print(f"Hot Topic #{idx}")
+                print(f"ID: {topic.id}")
+                print(f"Publication Date: {topic.publication_date}")
+                
+                if topic.snippet:
+                    print("\nSnippet:")
+                    print("-" * 80)
+                    print(topic.snippet)
+                    print("-" * 80)
+                    
                 print("\n" + "-"*100 + "\n")
             
     except Exception as e:

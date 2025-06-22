@@ -132,45 +132,30 @@ Note:
 - If the Generated News Snippet is 'Trash'. Response with a normal json object with all fields are true, and all issues are null.
 """
 
+SOCIAL_PROMPT = """
+You are a social media analyst. Based on the following trending topic and related posts, write a comprehensive report.
 
-SYNTHESIZE_PROMPT = """
-You are an expert AI researcher and analyst. Your task is to write a comprehensive, in-depth analysis article based on a group of related research papers and articles in {language}.
 
-Topic/Field: {tag}
+TRENDING TOPIC:
+- Topic ID: {topic_id}
+- Cluster Size: {size} posts
+- Keywords: {keywords_str}
+- Sources: {sources_str}
+- Average Confidence: {avg_probability:.3f}
 
-Related Articles:
-{content}
+RELATED POSTS:
+{posts_content}
 
-Article Relationships:
-{relationships}
+The output must be in Markdown and include:
+  • A level-1 title (the report headline)  
+  • Briefly identify the overarching topic of the discussion. 
+  • A rewritten snippet (2-3 paragraphs) Summary of discussion:
+    - What key points, facts, or questions were raised?
+    - What information or solutions were shared?
+  • Summary and Comments:
+    - Summarize the most important findings from your analysis.
+    - Make a statement about the general trend of the discussion or the implications that can be drawn.
 
-- The article should be in {language}.
 
-Please write a detailed analysis article that includes:
-
-1. Introduction and Context (1-2 paragraphs)
-   - Provide background on the field/topic
-   - Explain why this research area is important
-   - Set up the context for the analysis
-
-2. Key Developments and Findings (2-3 paragraphs)
-   - Analyze the main contributions from each article
-   - Identify common themes and patterns
-   - Highlight unique or innovative approaches
-   - Discuss methodological connections between papers
-
-3. Comparative Analysis (2-3 paragraphs)
-   - Compare and contrast different approaches
-   - Evaluate strengths and limitations
-   - Identify gaps in current research
-   - Discuss how the papers complement each other
-
-4. Consider practical applications and impact
-
-5. Conclusion (1 paragraph)
-   - Summarize key insights
-
-Note:
-- The analysis should be well-structured, technically accurate, and provide deep insights into the relationships between the papers. Use academic language while remaining accessible to a technical audience.
-- If you think all the articles are not related to each other, return **only** "no analysis", nothing else.
+Make the report professional, insightful, and actionable. Focus on the most important aspects and provide clear, concise analysis.
 """

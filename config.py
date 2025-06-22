@@ -26,7 +26,7 @@ class Config:
     DB_NAME = os.getenv("DB_NAME", "netmind_stalk")
 
 
-    LANGUAGE = "Vietnamese"
+    LANGUAGE = "English"
     
     # Database URL
     @classmethod
@@ -37,10 +37,10 @@ class Config:
 
     # ArXiv Settings
     ARXIV_SUBJECT = ["cs.AI", "cs.IR", "cs.LG", "cs.MA", "cs.CV", "cs.CL"]
-    ARXIV_MAX_RESULTS = 3
+    ARXIV_MAX_RESULTS = 1
     
     # Github Settings
-    GITHUB_MAX_REPOS = 3
+    GITHUB_MAX_REPOS = 1
 
     # Facebook Settings
     FACEBOOK_EMAIL = os.getenv("FACEBOOK_EMAIL")

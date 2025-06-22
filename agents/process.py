@@ -7,9 +7,7 @@ from prompts import TAGGING_PROMPT, TITLE_PROMPT
 import re
 from config import Config
 import logging
-from datetime import datetime
 import asyncio
-import json
 
 def clean_text(text: str) -> str:
     """
@@ -74,14 +72,13 @@ def process_and_tag(state: State, llm: AIClient) -> State:
                 item.content_tags = generate_tags(llm, item.cleaned_text, item.source)
                 if item.title is None:
                     item.title = generate_title(llm, item.cleaned_text, item.source)
-                logging.info("Generated title")
-                # Run async function in synchronous context
-                logging.info(f"Generating embedding for title")
-                embedding = asyncio.run(llm.get_embedding(item.title))
-                # Convert numpy float32 to regular Python list
-                item.embedding = [float(x) for x in embedding]
-        logging.info("Processed and tagged items")
+                logging.info("Cleaned text and generated title for item")
+        for post in state.posts:
+            if post.cleaned_text is None:
+                post.cleaned_text = clean_text(post.content_snippet)
+                logging.info("Cleaned text and generated title for post")
+        logging.info("Processed items and posts")
         return state
     except Exception as e:
-        logging.error(f"Process and tag failed: {e}")
+        logging.error(f"Process failed: {e}")
         raise
