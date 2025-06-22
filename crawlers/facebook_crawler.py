@@ -49,7 +49,7 @@ class FacebookCrawler:
         
         try:
             with sync_playwright() as p:
-                browser = p.chromium.launch(headless=False, args=["--no-sandbox", "--disable-setuid-sandbox"])
+                browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-setuid-sandbox"])
                 logging.info("Launching Playwright browser")
                 try:
                     if os.path.exists(FacebookCrawler.STATE_FILE):
