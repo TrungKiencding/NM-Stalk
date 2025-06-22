@@ -1,4 +1,4 @@
-# NetMind Stalk - Hệ Thống Tổng Hợp Tin Tức AI Thông Minh
+# Hệ Thống Tổng Hợp Tin Tức AI Thông Minh
 
 Hệ thống thông minh thu thập, phân tích và tổng hợp tin tức AI từ nhiều nguồn khác nhau bao gồm GitHub, arXiv, Facebook và X (Twitter).
 
